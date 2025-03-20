@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/home');
+      router.push('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {

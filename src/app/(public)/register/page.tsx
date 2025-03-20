@@ -28,7 +28,7 @@ export default function RegisterPage() {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/auth/login');
+      router.push('/login');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {
