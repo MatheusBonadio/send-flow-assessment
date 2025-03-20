@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
+import { authMiddleware, redirectToLogin, redirectToPath } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config";
 
 const PUBLIC_PATHS = ['/register', '/login'];
@@ -15,8 +15,8 @@ export async function middleware(request: NextRequest) {
     serviceAccount: serverConfig.serviceAccount,
     handleValidToken: async ({token, decodedToken, customToken}, headers) => {
 
-      if (PUBLIC_PATHS.includes(request.nextUrl.pathname))
-        return redirectToHome(request);
+      if (PUBLIC_PATHS.includes(request.nextUrl.pathname) || request.nextUrl.pathname === "/")
+        return redirectToPath(request, "/dashboard");
 
       return NextResponse.next({
         request: {
