@@ -1,6 +1,6 @@
 'use server';
 
-import { db, collection, doc, setDoc, getDoc, getDocs, query, where, updateDoc, deleteDoc } from '@/auth/firebase';
+import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/auth/firebase';
 import { cookies } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
 import { authConfig } from '@/config/serverConfig';

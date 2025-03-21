@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import  Link  from "next/link";
+import Link from 'next/link';
 
 export default function RootLayout({
   children,
@@ -9,17 +9,11 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Link href="/dashboard/connections">
-        Conexões
-      </Link>
+      <Link href="/dashboard/connections">Conexões</Link>
       <br />
-      <Link href="/dashboard/contacts">
-        Contatos
-      </Link>
+      <Link href="/dashboard/contacts">Contatos</Link>
       <br />
-      <Link href="/dashboard/broadcast">
-        Broadcasts
-      </Link>
+      <Link href="/dashboard/broadcast">Broadcasts</Link>
       {children}
     </div>
   );

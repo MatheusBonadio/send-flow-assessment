@@ -54,7 +54,7 @@ const ContatosPage: React.FC = () => {
   return (
     <div>
       <h1>Meus Contatos</h1>
-      <Button variant='contained' color='primary' onClick={handleAddContact}>
+      <Button variant="contained" color="primary" onClick={handleAddContact}>
         Adicionar Contato
       </Button>
       <ContactTable

@@ -3,11 +3,14 @@ import { Button } from '@mui/material';
 
 interface ContactActionsProps {
   onAdd: () => void;
-  onUpdate: (id: string, updatedData: { name: string; phone: string }) => Promise<void>;
+  onUpdate: (
+    id: string,
+    updatedData: { name: string; phone: string },
+  ) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
-const ContactActions: React.FC<ContactActionsProps> = ({ onAdd, onUpdate, onDelete }) => {
+const ContactActions: React.FC<ContactActionsProps> = ({ onAdd }) => {
   return (
     <div>
       <Button variant="contained" color="primary" onClick={onAdd}>

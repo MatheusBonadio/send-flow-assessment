@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import {
   authMiddleware,
   redirectToPath,
-  redirectToLogin
+  redirectToLogin,
 } from 'next-firebase-auth-edge';
 import { authConfig } from '@/config/serverConfig';
 
@@ -24,31 +24,34 @@ export async function middleware(request: NextRequest) {
     experimental_enableTokenRefreshOnExpiredKidHeader:
       authConfig.experimental_enableTokenRefreshOnExpiredKidHeader,
     // tenantId: authConfig.tenantId,
-    dynamicCustomClaimsKeys: ["someCustomClaim"],
-    handleValidToken: async ({token, decodedToken, customToken}, headers) => {
-      if (PUBLIC_PATHS.includes(request.nextUrl.pathname) || request.nextUrl.pathname === "/")
-        return redirectToPath(request, "/dashboard");
+    dynamicCustomClaimsKeys: ['someCustomClaim'],
+    handleValidToken: async ({}, headers) => {
+      if (
+        PUBLIC_PATHS.includes(request.nextUrl.pathname) ||
+        request.nextUrl.pathname === '/'
+      )
+        return redirectToPath(request, '/dashboard');
 
       return NextResponse.next({
         request: {
-          headers
-        }
+          headers,
+        },
       });
     },
-    handleInvalidToken: async (_reason) => {
+    handleInvalidToken: async () => {
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS
+        publicPaths: PUBLIC_PATHS,
       });
     },
     handleError: async (error) => {
-      console.error('Unhandled authentication error', {error});
+      console.error('Unhandled authentication error', { error });
 
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS
+        publicPaths: PUBLIC_PATHS,
       });
-    }
+    },
   });
 }
 
@@ -58,5 +61,5 @@ export const config = {
     '/((?!_next|favicon.ico|__/auth|__/firebase|api|.*\\.).*)',
     '/api/login',
     '/api/logout',
-  ]
+  ],
 };

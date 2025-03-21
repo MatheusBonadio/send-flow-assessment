@@ -2,7 +2,7 @@ import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, u
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-import { clientConfig } from '@/config';
+import { clientConfig } from '@/config/clientConfig';
 
 export const app = initializeApp(clientConfig);
 
