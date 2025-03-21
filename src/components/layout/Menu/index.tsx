@@ -10,15 +10,22 @@ import {
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
 import { app } from '@/auth/firebase';
-import { Avatar, IconButton } from '@mui/material';
+import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useAuth } from '@/auth/AuthContext';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export function Menu() {
   const { user } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
+    setIsLoggingOut(true);
+
     await signOut(getAuth(app));
+
     await fetch('/api/logout');
+
     window.location.href = '/login';
   }
 
@@ -29,11 +36,9 @@ export function Menu() {
         backgroundColor: '#fafafa',
       }}
     >
-      <div className="px-2">
-        <CustomMenuItem href="/">
-          <span className="text-xl font-bold">UnniChat</span>
-        </CustomMenuItem>
-      </div>
+      <Link href="/" className="px-4">
+        <span className="text-xl font-bold">UnniChat</span>
+      </Link>
       <div className="flex flex-col gap-1 p-2">
         <div className="px-2 pt-1 text-xs font-medium opacity-70">Funções</div>
         <CustomMenuItem
@@ -84,23 +89,35 @@ export function Menu() {
         <div className="flex items-center gap-2 p-2 text-sm">
           <Avatar
             alt="Profile"
-            src={user?.photoURL || undefined}
+            src={user?.photoURL || ''}
             sx={{ width: 32, height: 32, borderRadius: '8px' }}
             variant="square"
           />
           <div className="flex flex-col overflow-hidden">
             <span className="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
-              {user?.displayName || 'John Doe'}
+              {user?.displayName || 'Bem vindo'}
             </span>
             <div className="overflow-hidden text-xs text-ellipsis whitespace-nowrap">
-              {user?.email}
+              <span>
+                <Tooltip title={user?.email || ''}>
+                  <span>{user?.email}</span>
+                </Tooltip>
+              </span>
             </div>
           </div>
           <div style={{ marginLeft: 'auto' }}>
-            <IconButton onClick={handleLogout} size="small">
-              <Logout
-                style={{ fontSize: '16px', position: 'relative', top: -1 }}
-              />
+            <IconButton
+              onClick={handleLogout}
+              size="small"
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <CircularProgress size={16} style={{ color: '#1b5444' }} />
+              ) : (
+                <Logout
+                  style={{ fontSize: '16px', position: 'relative', top: -1 }}
+                />
+              )}
             </IconButton>
           </div>
         </div>

@@ -19,7 +19,7 @@ interface IProps {
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'O nome é obrigatório'),
-  phone: z.string().min(10, 'O telefone é obrigatório'),
+  phone: z.string().min(1, 'O telefone é obrigatório'),
 });
 
 type FormData = z.infer<typeof formSchema>;

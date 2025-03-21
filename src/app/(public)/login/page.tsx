@@ -1,8 +1,12 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
 import { app } from '@/auth/firebase';
 import {
   Card,
@@ -22,7 +26,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
+  const auth = getAuth(app);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -31,11 +36,33 @@ export default function Login() {
 
     try {
       const credential = await signInWithEmailAndPassword(
-        getAuth(app),
+        auth,
         email,
         password,
       );
       const idToken = await credential.user.getIdToken();
+
+      await fetch('/api/login', {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      window.location.href = '/dashboard';
+    } catch (e) {
+      setLoading(false);
+      setError((e as Error).message);
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setError('');
+    setLoading(true);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
 
       await fetch('/api/login', {
         headers: {
@@ -99,6 +126,7 @@ export default function Login() {
                   variant="outlined"
                   fullWidth
                   startIcon={<Google />}
+                  onClick={handleGoogleLogin}
                   sx={{
                     textTransform: 'initial',
                     color: colors.grey[800],

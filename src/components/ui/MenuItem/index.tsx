@@ -1,15 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export interface CustomMenuItemProps {
   href: string;
   children: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
   [key: string]: unknown;
 }
 
@@ -18,10 +20,20 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
   children,
   icon,
   onClick,
+  disabled = false,
   ...props
 }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    if (disabled) return;
+
+    startTransition(() => {
+      if (onClick) onClick();
+    });
+  };
 
   return (
     <Link href={href} passHref>
@@ -32,10 +44,18 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
             ? 'bg-emerald-100 font-medium text-emerald-700'
             : 'text-gray-700 hover:bg-emerald-100 hover:font-medium hover:text-emerald-700',
         )}
-        onClick={onClick}
+        onClick={handleClick}
         {...props}
       >
-        {icon && <div className="mr-2">{icon}</div>}
+        {isPending ? (
+          <CircularProgress
+            size={16}
+            className="mr-2"
+            style={{ color: '#1b5444' }}
+          />
+        ) : (
+          icon && <div className="mr-2">{icon}</div>
+        )}
         {children}
       </div>
     </Link>

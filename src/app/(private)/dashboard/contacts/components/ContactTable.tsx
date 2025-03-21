@@ -89,44 +89,51 @@ const ContactTable: React.FC = () => {
   }));
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-4 p-6 text-black">
-      <div className="flex w-full flex-row items-center gap-4 text-black">
-        <Button
-          variant="contained"
+    <>
+      <div
+        className="flex h-13 items-center gap-3 px-4 font-semibold"
+        style={{ borderBottom: '1px solid #e4e4e7' }}
+      >
+        <IconButton
           onClick={() => {
             setOpenModal(true);
             setSelectedContact(undefined);
           }}
-          startIcon={<AddIcon />}
           sx={{
-            borderRadius: 2,
-            textTransform: 'initial',
-            backgroundColor: '#1b5444',
+            backgroundColor: '#007a55',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#164c3b',
+            },
+            padding: '.3rem',
+            borderRadius: '.5rem',
           }}
         >
-          Novo
-        </Button>
+          <AddIcon style={{ fontSize: '18px' }} />
+        </IconButton>
+        Contatos
       </div>
+      <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
+        <CustomTable columns={columns} data={data} loading={loading} />
 
-      <CustomTable columns={columns} data={data} loading={loading} />
+        {openModal && (
+          <ContactModal
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            refetch={fetchContacts}
+            contact={selectedContact}
+          />
+        )}
 
-      {openModal && (
-        <ContactModal
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          refetch={fetchContacts}
-          contact={selectedContact}
-        />
-      )}
-
-      {openDialog && (
-        <CustomDialog
-          open={openDialog}
-          onClose={() => setOpenDialog(false)}
-          onConfirm={handleDeleteContact}
-        />
-      )}
-    </div>
+        {openDialog && (
+          <CustomDialog
+            open={openDialog}
+            onClose={() => setOpenDialog(false)}
+            onConfirm={handleDeleteContact}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

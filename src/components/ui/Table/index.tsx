@@ -33,7 +33,7 @@ export default function CustomTable({
   loading = false,
 }: IProps) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -53,7 +53,10 @@ export default function CustomTable({
 
   return (
     <TableContainer
-      sx={{ borderRadius: 4 }}
+      sx={{
+        borderRadius: 4,
+        boxShadow: '0 1px 3px 0 rgba(0,0,0,.2),0 1px 2px -1px rgba(0,0,0,.2)',
+      }}
       className="border-1 border-gray-300 bg-white"
     >
       <Table>
