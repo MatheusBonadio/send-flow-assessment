@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { getAuth, signOut } from "firebase/auth";
-import { app } from "@/lib/firebase";
+import { app } from "@/auth/firebase";
 
 interface HomePageProps {
   email?: string;

@@ -1,11 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "@/lib/firebase";
-import { Card, CircularProgress, CardContent, Typography, Button, Link, Divider, colors } from '@mui/material';
+import { app } from "@/auth/firebase";
+import { Card, Alert, CircularProgress, CardContent, Typography, Button, Link, Divider, colors } from '@mui/material';
 import { Google } from '@mui/icons-material';
 
 export default function Login() {
@@ -36,15 +35,14 @@ export default function Login() {
 
       router.push("/dashboard");
     } catch (e) {
-      setError((e as Error).message);
-    } finally {
       setLoading(false);
-    }
+      setError((e as Error).message);
+    } 
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="mb-4 flex items-center justify-center">
+      <div className="mb-4 flex items-center justify-center select-none">
         <div className="flex justify-centers items-center w-6 h-6 rounded-lg" style={{ backgroundColor: '#66c0a6' }}>
           <img
             src="unnichat-logo.png"
@@ -78,6 +76,7 @@ export default function Login() {
                 </Typography>
               </Divider>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {error && <Alert severity="error">{error}</Alert>}
                 <div>
                   <label className="text-sm font-medium leading-none">Email</label>
                   <input
