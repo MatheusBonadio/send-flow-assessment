@@ -1,125 +1,132 @@
-import React, { useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  TablePagination,
-  TableSortLabel,
-} from '@mui/material';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Button, IconButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import CustomTable from '@/components/ui/Table';
 import { IContact } from '@/services/contactService';
+import { getAllContacts, deleteContact } from '@/services/contactService';
+import ContactModal from './ContactModal';
+import CustomDialog from '@/components/ui/Dialog';
+import { useAlert } from '@/utils/AlertProvider';
 
-export interface ContactTableProps {
-  contacts: IContact[];
-  onUpdate: (id: string, updatedData: IContact) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-}
+const columns = [
+  { id: 'name', label: 'Nome' },
+  { id: 'phone', label: 'Telefone' },
+  { id: 'actions', label: 'Ações' },
+];
 
-const ContactTable: React.FC<ContactTableProps> = ({
-  contacts,
-  onUpdate,
-  onDelete,
-}) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-  const [orderBy, setOrderBy] = useState<string>('name');
-
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number,
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleRequestSort = (property: string) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const sortedContacts = contacts.sort((a, b) => {
-    if (orderBy === 'name') {
-      return order === 'asc'
-        ? a.name!.localeCompare(b.name!)
-        : b.name!.localeCompare(a.name!);
-    }
-    return 0;
-  });
-
-  const displayedContacts = sortedContacts.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
+const ContactTable: React.FC = () => {
+  const [contacts, setContacts] = useState<IContact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<IContact | undefined>(
+    undefined,
   );
+  const { showAlert } = useAlert();
+
+  const handleDeleteContact = async () => {
+    if (!selectedContact) return;
+
+    try {
+      if (selectedContact?.id) await deleteContact(selectedContact.id);
+
+      showAlert('Contato excluído com sucesso!', 'success');
+      fetchContacts();
+    } catch (error: unknown) {
+      showAlert(String(error), 'error');
+    } finally {
+      setOpenDialog(false);
+    }
+  };
+
+  const fetchContacts = async () => {
+    setLoading(true);
+
+    try {
+      const fetchedContacts = await getAllContacts();
+      setContacts(fetchedContacts);
+    } catch (error: unknown) {
+      showAlert(String(error), 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const data = contacts.map((contact) => ({
+    id: contact.id,
+    name: contact.name,
+    phone: contact.phone,
+    actions: (
+      <div className="flex gap-2">
+        <IconButton
+          aria-label="edit"
+          onClick={() => {
+            setSelectedContact(contact);
+            setOpenModal(true);
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          aria-label="delete"
+          onClick={() => {
+            setSelectedContact(contact);
+            setOpenDialog(true);
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </div>
+    ),
+  }));
 
   return (
-    <TableContainer component={Paper} className="px-10">
-      <Table sx={{ borderRadius: 4 }} className="border-1 border-gray-500">
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <TableSortLabel
-                active={orderBy === 'name'}
-                direction={orderBy === 'name' ? order : 'asc'}
-                onClick={() => handleRequestSort('name')}
-              >
-                Nome
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>Telefone</TableCell>
-            <TableCell>Ações</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {displayedContacts.map((contact: IContact) => (
-            <TableRow key={contact.id}>
-              <TableCell>{contact.name}</TableCell>
-              <TableCell>{contact.phone}</TableCell>
-              <TableCell>
-                <Button
-                  onClick={() =>
-                    contact.id &&
-                    onUpdate(contact.id, {
-                      name: 'Atualizado',
-                      phone: '987654321',
-                    })
-                  }
-                >
-                  Atualizar
-                </Button>
-                <Button
-                  onClick={() => contact.id && onDelete(contact.id)}
-                  color="error"
-                >
-                  Deletar
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={contacts.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </TableContainer>
+    <div className="flex w-full flex-col items-center justify-between gap-4 p-6 text-black">
+      <div className="flex w-full flex-row items-center gap-4 text-black">
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpenModal(true);
+            setSelectedContact(undefined);
+          }}
+          startIcon={<AddIcon />}
+          sx={{
+            borderRadius: 2,
+            textTransform: 'initial',
+            backgroundColor: '#1b5444',
+          }}
+        >
+          Novo
+        </Button>
+      </div>
+
+      <CustomTable columns={columns} data={data} loading={loading} />
+
+      {openModal && (
+        <ContactModal
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          refetch={fetchContacts}
+          contact={selectedContact}
+        />
+      )}
+
+      {openDialog && (
+        <CustomDialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          onConfirm={handleDeleteContact}
+        />
+      )}
+    </div>
   );
 };
 

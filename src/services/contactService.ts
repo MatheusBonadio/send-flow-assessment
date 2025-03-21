@@ -23,9 +23,8 @@ const getAuthenticatedUserTokens = async () => {
     if (!tokens) throw new Error("Usuário não autenticado.");
 
     return tokens;
-  } catch (error) {
-    console.error("Error getting authenticated user tokens:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível obter os tokens do usuário autenticado");
   }
 };
 
@@ -33,14 +32,14 @@ export const addContact = async (contactData: IContact) => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
 
+    contactData.id = uuidv4();
     contactData.createdAt = new Date();
     contactData.updatedAt = new Date();
 
-    const contactRef = doc(contactsCollection(user.uid), uuidv4());
+    const contactRef = doc(contactsCollection(user.uid), contactData.id);
     await setDoc(contactRef, contactData);
-  } catch (error) {
-    console.error("Error adding contact:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível adicionar contato");
   }
 };
 
@@ -53,9 +52,8 @@ export const getContact = async (contactId: string) => {
 
     if (docSnap.exists()) return docSnap.data();
     else return null;
-  } catch (error) {
-    console.error("Error getting contact:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível obter contato");
   }
 };
 
@@ -72,17 +70,16 @@ export const getAllContacts = async () => {
       const data = doc.data() as IContact;
 
       contacts.push({
-        id: doc.id,
         ...data,
+        id: doc.id,
         updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
         createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt
       });
     });
 
     return contacts;
-  } catch (error) {
-    console.error("Error getting all contacts:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível obter todos os contatos");
   }
 };
 
@@ -94,9 +91,8 @@ export const updateContact = async (contactId: string, updatedData: IContact) =>
 
     const contactRef = doc(contactsCollection(user.uid), contactId);
     await updateDoc(contactRef, { ...updatedData });
-  } catch (error) {
-    console.error("Error updating contact:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível atualizar contato");
   }
 };
 
@@ -106,8 +102,7 @@ export const deleteContact = async (contactId: string) => {
 
     const contactRef = doc(contactsCollection(user.uid), contactId);
     await deleteDoc(contactRef);
-  } catch (error) {
-    console.error("Error deleting contact:", error);
-    throw error;
+  } catch {
+    throw new Error("Não foi possível excluir contato");
   }
 };

@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import { Metadata } from 'next';
+import { Menu } from '@/components/layout/Menu';
+import { Body } from '@/components/layout/Body';
 
 export default function RootLayout({
   children,
@@ -8,12 +9,8 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Link href="/dashboard/connections">Conexões</Link>
-      <br />
-      <Link href="/dashboard/contacts">Contatos</Link>
-      <br />
-      <Link href="/dashboard/broadcast">Broadcasts</Link>
-      {children}
+      <Menu />
+      <Body>{children}</Body>
     </div>
   );
 }

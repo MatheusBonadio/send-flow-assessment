@@ -5,8 +5,9 @@ import { cookies, headers } from 'next/headers';
 import { authConfig } from '@/config/serverConfig';
 import { AuthProvider } from '../auth/AuthProvider';
 import { toUser } from '@/shared/user';
-import { AlertProvider } from '@/components/layout/Alert/AlertProvider';
-import { SnackbarProviders } from '@/components/layout/Alert/AlertProvider';
+import { AlertProvider } from '@/utils/AlertProvider';
+import { SnackbarProviders } from '@/utils/AlertProvider';
+import { GeistSans } from 'geist/font/sans';
 
 export default async function RootLayout({
   children,
@@ -20,7 +21,7 @@ export default async function RootLayout({
   const user = tokens ? toUser(tokens) : null;
 
   return (
-    <html lang="en">
+    <html lang="en" className={GeistSans.className}>
       <head />
       <body className={`antialiased`}>
         <SnackbarProviders>

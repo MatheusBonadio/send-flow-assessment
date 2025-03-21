@@ -43,7 +43,7 @@ export default function Login() {
         },
       });
 
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -198,7 +198,7 @@ export default function Login() {
             </form>
           </CardContent>
           <div
-            className="hidden w-[300px] flex-grow items-center justify-center bg-cover bg-center opacity-50 md:flex"
+            className="hidden w-[300px] flex-grow items-center justify-center bg-cover bg-center opacity-70 md:flex"
             style={{
               backgroundImage: 'url(login-photo.webp)',
             }}

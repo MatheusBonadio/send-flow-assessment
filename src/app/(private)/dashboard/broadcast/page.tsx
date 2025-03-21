@@ -1,12 +1,14 @@
 import React from 'react';
 
-const BroadcastPage = () => {
+const BroadcastLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <h1>Broadcast</h1>
-      <p>Welcome to the Broadcast page!</p>
+      <header>
+        <h1>Broadcast Layout</h1>
+      </header>
+      <main>{children}</main>
     </div>
   );
 };
 
-export default BroadcastPage;
+export default BroadcastLayout;
