@@ -6,13 +6,16 @@ import {
   addContact,
   updateContact,
   deleteContact,
+  IContact,
 } from '@/services/contactService';
 import ContactTable from './components/ContactTable';
 import { Button, CircularProgress } from '@mui/material';
+import { useAlert } from '@/components/layout/Alert/AlertProvider';
 
-const ContatosPage: React.FC = () => {
-  const [contacts, setContacts] = useState<any[]>([]);
+const ContactPage: React.FC = () => {
+  const [contacts, setContacts] = useState<IContact[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -31,22 +34,36 @@ const ContatosPage: React.FC = () => {
 
   const handleAddContact = async () => {
     const newContact = { name: 'Novo Contato', phone: '123456789' };
-    await addContact(newContact);
-    setContacts(await getAllContacts()); // Atualiza a lista de contatos
-    alert('Contato adicionado com sucesso!');
+
+    try {
+      await addContact(newContact);
+      showAlert('Usuário criado com sucesso', 'success');
+      setContacts(await getAllContacts());
+    } catch (error) {
+      showAlert('Erro ao adicionar contato: ' + error, 'error');
+    }
   };
 
   const handleUpdateContact = async (id: string) => {
     const updatedContact = { name: 'Contato Atualizado2', phone: '123456789' };
-    await updateContact(id, updatedContact);
-    setContacts(await getAllContacts()); // Atualiza a lista de contatos
-    alert('Contato atualizado com sucesso!');
+
+    try {
+      await updateContact(id, updatedContact);
+      showAlert('Contato atualizado com sucesso', 'success');
+      setContacts(await getAllContacts());
+    } catch (error) {
+      showAlert('Erro ao atualizar contato: ' + error, 'error');
+    }
   };
 
   const handleDeleteContact = async (id: string) => {
-    await deleteContact(id);
-    setContacts(await getAllContacts()); // Atualiza a lista de contatos
-    alert('Contato deletado com sucesso!');
+    try {
+      await deleteContact(id);
+      showAlert('Contato excluído com sucesso', 'success');
+      setContacts(await getAllContacts());
+    } catch (error) {
+      showAlert('Erro ao excluir contato: ' + error, 'error');
+    }
   };
 
   if (loading) return <CircularProgress />;
@@ -66,4 +83,4 @@ const ContatosPage: React.FC = () => {
   );
 };
 
-export default ContatosPage;
+export default ContactPage;

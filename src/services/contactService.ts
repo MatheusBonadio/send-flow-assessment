@@ -17,67 +17,97 @@ export interface IContact {
 }
 
 const getAuthenticatedUserTokens = async () => {
-  const tokens = await getTokens(await cookies(), authConfig);
+  try {
+    const tokens = await getTokens(await cookies(), authConfig);
 
-  if (!tokens) throw new Error("Usuário não autenticado.");
+    if (!tokens) throw new Error("Usuário não autenticado.");
 
-  return tokens;
+    return tokens;
+  } catch (error) {
+    console.error("Error getting authenticated user tokens:", error);
+    throw error;
+  }
 };
 
 export const addContact = async (contactData: IContact) => {
-  const user = (await getAuthenticatedUserTokens()).decodedToken;
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
 
-  contactData.createdAt = new Date();
-  contactData.updatedAt = new Date();
+    contactData.createdAt = new Date();
+    contactData.updatedAt = new Date();
 
-  const contactRef = doc(contactsCollection(user.uid), uuidv4());
-  await setDoc(contactRef, contactData);
+    const contactRef = doc(contactsCollection(user.uid), uuidv4());
+    await setDoc(contactRef, contactData);
+  } catch (error) {
+    console.error("Error adding contact:", error);
+    throw error;
+  }
 };
 
 export const getContact = async (contactId: string) => {
-  const user = (await getAuthenticatedUserTokens()).decodedToken;
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
 
-  const contactRef = doc(contactsCollection(user.uid), contactId);
-  const docSnap = await getDoc(contactRef);
+    const contactRef = doc(contactsCollection(user.uid), contactId);
+    const docSnap = await getDoc(contactRef);
 
-  if (docSnap.exists()) return docSnap.data();
-  else return null;
+    if (docSnap.exists()) return docSnap.data();
+    else return null;
+  } catch (error) {
+    console.error("Error getting contact:", error);
+    throw error;
+  }
 };
 
 import { Timestamp } from "firebase/firestore";
 
 export const getAllContacts = async () => {
-  const user = (await getAuthenticatedUserTokens()).decodedToken;
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
 
-  const querySnapshot = await getDocs(contactsCollection(user.uid));
-  const contacts: IContact[] = [];
+    const querySnapshot = await getDocs(contactsCollection(user.uid));
+    const contacts: IContact[] = [];
 
-  querySnapshot.forEach(doc => {
-    const data = doc.data() as IContact;
+    querySnapshot.forEach(doc => {
+      const data = doc.data() as IContact;
 
-    contacts.push({
-      id: doc.id,
-      ...data,
-      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
-      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt
+      contacts.push({
+        id: doc.id,
+        ...data,
+        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt
+      });
     });
-  });
 
-  return contacts;
+    return contacts;
+  } catch (error) {
+    console.error("Error getting all contacts:", error);
+    throw error;
+  }
 };
 
 export const updateContact = async (contactId: string, updatedData: IContact) => {
-  const user = (await getAuthenticatedUserTokens()).decodedToken;
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
 
-  updatedData.updatedAt = new Date();
+    updatedData.updatedAt = new Date();
 
-  const contactRef = doc(contactsCollection(user.uid), contactId);
-  await updateDoc(contactRef, { ...updatedData });
+    const contactRef = doc(contactsCollection(user.uid), contactId);
+    await updateDoc(contactRef, { ...updatedData });
+  } catch (error) {
+    console.error("Error updating contact:", error);
+    throw error;
+  }
 };
 
 export const deleteContact = async (contactId: string) => {
-  const user = (await getAuthenticatedUserTokens()).decodedToken;
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
 
-  const contactRef = doc(contactsCollection(user.uid), contactId);
-  await deleteDoc(contactRef);
+    const contactRef = doc(contactsCollection(user.uid), contactId);
+    await deleteDoc(contactRef);
+  } catch (error) {
+    console.error("Error deleting contact:", error);
+    throw error;
+  }
 };

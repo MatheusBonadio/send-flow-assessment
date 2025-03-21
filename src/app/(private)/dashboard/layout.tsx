@@ -1,6 +1,5 @@
-'use client';
-
 import Link from 'next/link';
+import { Metadata } from 'next';
 
 export default function RootLayout({
   children,
@@ -18,3 +17,7 @@ export default function RootLayout({
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'UnniChat Dashboard',
+};

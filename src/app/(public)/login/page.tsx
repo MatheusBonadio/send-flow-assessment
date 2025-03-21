@@ -64,7 +64,7 @@ export default function Login() {
           />
         </div>
         <span className="ml-2 text-lg font-semibold tracking-tight">
-          Unnichat
+          UnniChat
         </span>
       </div>
       <Card

@@ -1,11 +1,12 @@
 import './globals.css';
-// import styles from './layout.module.css';
 import { Metadata } from 'next';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies, headers } from 'next/headers';
 import { authConfig } from '@/config/serverConfig';
 import { AuthProvider } from '../auth/AuthProvider';
 import { toUser } from '@/shared/user';
+import { AlertProvider } from '@/components/layout/Alert/AlertProvider';
+import { SnackbarProviders } from '@/components/layout/Alert/AlertProvider';
 
 export default async function RootLayout({
   children,
@@ -22,14 +23,16 @@ export default async function RootLayout({
     <html lang="en">
       <head />
       <body className={`antialiased`}>
-        <AuthProvider user={user}>{children}</AuthProvider>
+        <SnackbarProviders>
+          <AlertProvider>
+            <AuthProvider user={user}>{children}</AuthProvider>
+          </AlertProvider>
+        </SnackbarProviders>
       </body>
     </html>
   );
 }
 
 export const metadata: Metadata = {
-  title: 'next-firebase-auth-edge example page',
-  description: 'Next.js page showcasing next-firebase-auth-edge features',
-  icons: '/favicon.ico',
+  title: 'UnniChat',
 };

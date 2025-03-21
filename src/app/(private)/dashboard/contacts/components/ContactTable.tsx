@@ -11,7 +11,7 @@ import {
   TablePagination,
   TableSortLabel,
 } from '@mui/material';
-import { IContact } from '@/services/contactService'; // Ajuste conforme o tipo utilizado
+import { IContact } from '@/services/contactService';
 
 export interface ContactTableProps {
   contacts: IContact[];
@@ -24,17 +24,14 @@ const ContactTable: React.FC<ContactTableProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  // State for pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // State for sorting
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<string>('name');
 
-  // Handle pagination change
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number,
   ) => {
     setPage(newPage);
@@ -44,17 +41,15 @@ const ContactTable: React.FC<ContactTableProps> = ({
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to page 0 when changing rows per page
+    setPage(0);
   };
 
-  // Sorting function
   const handleRequestSort = (property: string) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  // Sort contacts by column
   const sortedContacts = contacts.sort((a, b) => {
     if (orderBy === 'name') {
       return order === 'asc'
@@ -64,7 +59,6 @@ const ContactTable: React.FC<ContactTableProps> = ({
     return 0;
   });
 
-  // Get the contacts to display on the current page
   const displayedContacts = sortedContacts.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage,
@@ -89,13 +83,14 @@ const ContactTable: React.FC<ContactTableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {displayedContacts.map((contact) => (
+          {displayedContacts.map((contact: IContact) => (
             <TableRow key={contact.id}>
               <TableCell>{contact.name}</TableCell>
               <TableCell>{contact.phone}</TableCell>
               <TableCell>
                 <Button
                   onClick={() =>
+                    contact.id &&
                     onUpdate(contact.id, {
                       name: 'Atualizado',
                       phone: '987654321',
@@ -104,7 +99,10 @@ const ContactTable: React.FC<ContactTableProps> = ({
                 >
                   Atualizar
                 </Button>
-                <Button onClick={() => onDelete(contact.id)} color="error">
+                <Button
+                  onClick={() => contact.id && onDelete(contact.id)}
+                  color="error"
+                >
                   Deletar
                 </Button>
               </TableCell>
