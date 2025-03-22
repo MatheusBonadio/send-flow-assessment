@@ -1,41 +1,43 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IconButton } from '@mui/material';
+import { Chip, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CustomTable from '@/components/ui/Table';
-import { IContact } from '@/services/contactService';
-import { getAllContacts, deleteContact } from '@/services/contactService';
-import ContactModal from './ContactModal';
+import { IBroadcast } from '@/services/broadcastService';
+import { getAllBroadcasts, deleteBroadcast } from '@/services/broadcastService';
+import BroadcastModal from './BroadcastModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
 
 const columns = [
   { id: 'name', label: 'Nome' },
-  { id: 'phone', label: 'Telefone' },
+  { id: 'connectionName', label: 'Conexão' },
+  { id: 'scheduledTime', label: 'Hora Agendada' },
+  { id: 'status', label: 'Status' },
   { id: 'actions', label: 'Ações' },
 ];
 
-const ContactTable: React.FC = () => {
-  const [contacts, setContacts] = useState<IContact[]>([]);
+const BroadcastTable: React.FC = () => {
+  const [broadcasts, setBroadcasts] = useState<IBroadcast[]>([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<IContact | undefined>(
-    undefined,
-  );
+  const [selectedBroadcast, setSelectedBroadcast] = useState<
+    IBroadcast | undefined
+  >(undefined);
   const { showAlert } = useAlert();
 
-  const handleDeleteContact = async () => {
-    if (!selectedContact) return;
+  const handleDeleteBroadcast = async () => {
+    if (!selectedBroadcast) return;
 
     try {
-      if (selectedContact?.id) await deleteContact(selectedContact.id);
+      if (selectedBroadcast?.id) await deleteBroadcast(selectedBroadcast.id);
 
-      showAlert('Contato excluído com sucesso!', 'success');
-      fetchContacts();
+      showAlert('Broadcast excluído com sucesso!', 'success');
+      fetchBroadcasts();
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -43,12 +45,12 @@ const ContactTable: React.FC = () => {
     }
   };
 
-  const fetchContacts = async () => {
+  const fetchBroadcasts = async () => {
     setLoading(true);
 
     try {
-      const fetchedContacts = await getAllContacts();
-      setContacts(fetchedContacts);
+      const fetchedBroadcasts = await getAllBroadcasts();
+      setBroadcasts(fetchedBroadcasts);
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -57,19 +59,28 @@ const ContactTable: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchContacts();
+    fetchBroadcasts();
   }, []);
 
-  const data = contacts.map((contact) => ({
-    id: contact.id,
-    name: contact.name,
-    phone: contact.phone,
+  const data = broadcasts.map((broadcast) => ({
+    id: broadcast.id,
+    connectionName: broadcast.connectionName,
+    name: broadcast.name,
+    scheduledTime: broadcast.scheduledTime,
+    status: (
+      <Chip
+        label={broadcast.status === 'scheduled' ? 'Agendado' : 'Enviado'}
+        color={broadcast.status === 'scheduled' ? 'primary' : 'success'}
+        size="small"
+        variant="outlined"
+      />
+    ),
     actions: (
       <div className="flex gap-2">
         <IconButton
           aria-label="edit"
           onClick={() => {
-            setSelectedContact(contact);
+            setSelectedBroadcast(broadcast);
             setOpenModal(true);
           }}
         >
@@ -78,7 +89,7 @@ const ContactTable: React.FC = () => {
         <IconButton
           aria-label="delete"
           onClick={() => {
-            setSelectedContact(contact);
+            setSelectedBroadcast(broadcast);
             setOpenDialog(true);
           }}
         >
@@ -97,7 +108,7 @@ const ContactTable: React.FC = () => {
         <IconButton
           onClick={() => {
             setOpenModal(true);
-            setSelectedContact(undefined);
+            setSelectedBroadcast(undefined);
           }}
           sx={{
             backgroundColor: '#007a55',
@@ -111,17 +122,17 @@ const ContactTable: React.FC = () => {
         >
           <AddIcon style={{ fontSize: '18px' }} />
         </IconButton>
-        Contatos
+        Transmissões
       </div>
       <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
         <CustomTable columns={columns} data={data} loading={loading} />
 
         {openModal && (
-          <ContactModal
+          <BroadcastModal
             open={openModal}
             onClose={() => setOpenModal(false)}
-            refetch={fetchContacts}
-            contact={selectedContact}
+            refetch={fetchBroadcasts}
+            broadcast={selectedBroadcast}
           />
         )}
 
@@ -129,7 +140,7 @@ const ContactTable: React.FC = () => {
           <CustomDialog
             open={openDialog}
             onClose={() => setOpenDialog(false)}
-            onConfirm={handleDeleteContact}
+            onConfirm={handleDeleteBroadcast}
           />
         )}
       </div>
@@ -137,4 +148,4 @@ const ContactTable: React.FC = () => {
   );
 };
 
-export default ContactTable;
+export default BroadcastTable;

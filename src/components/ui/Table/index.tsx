@@ -70,25 +70,33 @@ export default function CustomTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {loading
-            ? Array.from({ length: rowsPerPage }).map((_, index) => (
-                <TableRow key={index}>
-                  {columns.map(() => (
-                    <TableCell key={uuidv4()}>
-                      <Skeleton variant="text" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            : displayedData.map((row) => (
-                <TableRow key={uuidv4()}>
-                  {columns.map((column) => (
-                    <TableCell key={uuidv4()} className="!px-3 !py-1">
-                      {row[column.id]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+          {loading ? (
+            Array.from({ length: rowsPerPage }).map((_, index) => (
+              <TableRow key={index}>
+                {columns.map(() => (
+                  <TableCell key={uuidv4()}>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : displayedData.length > 0 ? (
+            displayedData.map((row) => (
+              <TableRow key={uuidv4()}>
+                {columns.map((column) => (
+                  <TableCell key={uuidv4()} className="!px-3 !py-1">
+                    {row[column.id]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} align="center">
+                Nenhum dado encontrado
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
       {!loading && (

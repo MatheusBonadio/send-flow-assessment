@@ -1,14 +1,10 @@
-import React from 'react';
+'use client';
 
-const BroadcastLayout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div>
-      <header>
-        <h1>Broadcast Layout</h1>
-      </header>
-      <main>{children}</main>
-    </div>
-  );
+import React from 'react';
+import BroadcastTable from './components/BroadcastTable';
+
+const BroadcastPage: React.FC = () => {
+  return <BroadcastTable />;
 };
 
-export default BroadcastLayout;
+export default BroadcastPage;

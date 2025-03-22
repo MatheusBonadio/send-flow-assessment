@@ -79,7 +79,7 @@ export function Menu() {
             />
           }
         >
-          Broadcasts
+          Transmissões
         </CustomMenuItem>
       </div>
       <div className="flex flex-col gap-1 p-2">

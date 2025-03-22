@@ -9,11 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
 const contactsCollection = (userId: string) => collection(db, `users/${userId}/contacts`);
 
 export interface IContact {
-  id?: string;
-  name?: string;
-  phone?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  id: string;
+  name: string;
+  phone: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const getAuthenticatedUserTokens = async () => {

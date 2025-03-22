@@ -16,7 +16,11 @@ const CustomButton = forwardRef<HTMLButtonElement, IProps>(
         ref={ref}
         disabled={loading || props.disabled}
         startIcon={
-          loading ? <CircularProgress size={16} /> : props.startIcon || null
+          loading ? (
+            <CircularProgress size={16} style={{ color: colors.grey[600] }} />
+          ) : (
+            props.startIcon || null
+          )
         }
         sx={{
           textTransform: 'initial',

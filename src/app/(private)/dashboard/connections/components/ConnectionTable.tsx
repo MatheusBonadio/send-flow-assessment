@@ -6,36 +6,38 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CustomTable from '@/components/ui/Table';
-import { IContact } from '@/services/contactService';
-import { getAllContacts, deleteContact } from '@/services/contactService';
-import ContactModal from './ContactModal';
+import { IConnection } from '@/services/connectionService';
+import {
+  getAllConnections,
+  deleteConnection,
+} from '@/services/connectionService';
+import ConnectionModal from './ConnectionModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
 
 const columns = [
   { id: 'name', label: 'Nome' },
-  { id: 'phone', label: 'Telefone' },
   { id: 'actions', label: 'Ações' },
 ];
 
-const ContactTable: React.FC = () => {
-  const [contacts, setContacts] = useState<IContact[]>([]);
+const ConnectionTable: React.FC = () => {
+  const [connections, setConnections] = useState<IConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<IContact | undefined>(
-    undefined,
-  );
+  const [selectedConnection, setSelectedConnection] = useState<
+    IConnection | undefined
+  >(undefined);
   const { showAlert } = useAlert();
 
-  const handleDeleteContact = async () => {
-    if (!selectedContact) return;
+  const handleDeleteConnection = async () => {
+    if (!selectedConnection) return;
 
     try {
-      if (selectedContact?.id) await deleteContact(selectedContact.id);
+      if (selectedConnection?.id) await deleteConnection(selectedConnection.id);
 
-      showAlert('Contato excluído com sucesso!', 'success');
-      fetchContacts();
+      showAlert('Conexão excluída com sucesso!', 'success');
+      fetchConnections();
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -43,12 +45,12 @@ const ContactTable: React.FC = () => {
     }
   };
 
-  const fetchContacts = async () => {
+  const fetchConnections = async () => {
     setLoading(true);
 
     try {
-      const fetchedContacts = await getAllContacts();
-      setContacts(fetchedContacts);
+      const fetchedConnections = await getAllConnections();
+      setConnections(fetchedConnections);
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -57,19 +59,18 @@ const ContactTable: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchContacts();
+    fetchConnections();
   }, []);
 
-  const data = contacts.map((contact) => ({
-    id: contact.id,
-    name: contact.name,
-    phone: contact.phone,
+  const data = connections.map((connection) => ({
+    id: connection.id,
+    name: connection.name,
     actions: (
       <div className="flex gap-2">
         <IconButton
           aria-label="edit"
           onClick={() => {
-            setSelectedContact(contact);
+            setSelectedConnection(connection);
             setOpenModal(true);
           }}
         >
@@ -78,7 +79,7 @@ const ContactTable: React.FC = () => {
         <IconButton
           aria-label="delete"
           onClick={() => {
-            setSelectedContact(contact);
+            setSelectedConnection(connection);
             setOpenDialog(true);
           }}
         >
@@ -97,7 +98,7 @@ const ContactTable: React.FC = () => {
         <IconButton
           onClick={() => {
             setOpenModal(true);
-            setSelectedContact(undefined);
+            setSelectedConnection(undefined);
           }}
           sx={{
             backgroundColor: '#007a55',
@@ -111,17 +112,17 @@ const ContactTable: React.FC = () => {
         >
           <AddIcon style={{ fontSize: '18px' }} />
         </IconButton>
-        Contatos
+        Conexões
       </div>
       <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
         <CustomTable columns={columns} data={data} loading={loading} />
 
         {openModal && (
-          <ContactModal
+          <ConnectionModal
             open={openModal}
             onClose={() => setOpenModal(false)}
-            refetch={fetchContacts}
-            contact={selectedContact}
+            refetch={fetchConnections}
+            connection={selectedConnection}
           />
         )}
 
@@ -129,7 +130,7 @@ const ContactTable: React.FC = () => {
           <CustomDialog
             open={openDialog}
             onClose={() => setOpenDialog(false)}
-            onConfirm={handleDeleteContact}
+            onConfirm={handleDeleteConnection}
           />
         )}
       </div>
@@ -137,4 +138,4 @@ const ContactTable: React.FC = () => {
   );
 };
 
-export default ContactTable;
+export default ConnectionTable;
