@@ -29,6 +29,7 @@ const formSchema = z.object({
   }),
   messageBody: z.string().min(1, 'A mensagem é obrigatória'),
   connectionID: z.string().min(1, 'O ID de conexão é obrigatório'),
+  connectionName: z.string().optional(),
   contactsIDs: z.array(z.string()).min(1, 'Pelo menos um contato é necessário'),
 });
 
@@ -115,7 +116,14 @@ export default function BroadcastModal({
     async function fetchContacts() {
       try {
         const fetchedContacts = await getAllContacts();
-        setContacts(fetchedContacts);
+        setContacts(
+          fetchedContacts
+            .filter((contact) => contact.id !== undefined)
+            .map((contact) => ({
+              id: contact.id as string,
+              name: contact.name,
+            })),
+        );
       } catch (error: unknown) {
         showAlert(String(error), 'error');
       }
@@ -125,7 +133,14 @@ export default function BroadcastModal({
     async function fetchConnections() {
       try {
         const fetchedConnections = await getAllConnections();
-        setConnections(fetchedConnections);
+        setConnections(
+          fetchedConnections
+            .filter((connection) => connection.id !== undefined)
+            .map((connection) => ({
+              id: connection.id as string,
+              name: connection.name,
+            })),
+        );
       } catch (error: unknown) {
         showAlert(String(error), 'error');
       }
@@ -205,7 +220,7 @@ export default function BroadcastModal({
                     label="Contatos"
                     error={!!errors.contactsIDs}
                     helperText={errors.contactsIDs?.message}
-                    color="..."
+                    // color="..."
                   />
                 )}
                 onChange={(_, value) => {
@@ -252,7 +267,7 @@ export default function BroadcastModal({
           helperText={errors.messageBody?.message}
           multiline
           rows={3}
-          color="..."
+          // color="..."
           {...register('messageBody')}
         />
 

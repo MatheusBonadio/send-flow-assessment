@@ -45,7 +45,7 @@ const ConnectionTable: React.FC = () => {
     }
   };
 
-  const fetchConnections = async () => {
+  const fetchConnections = React.useCallback(async () => {
     setLoading(true);
 
     try {
@@ -56,11 +56,11 @@ const ConnectionTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
 
   useEffect(() => {
     fetchConnections();
-  }, []);
+  }, [fetchConnections]);
 
   const data = connections.map((connection) => ({
     id: connection.id,

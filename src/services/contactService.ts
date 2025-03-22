@@ -6,11 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 const contactsCollection = (userId: string) => collection(db, `users/${userId}/contacts`);
 
 export interface IContact {
-  id: string;
+  id?: string;
   name: string;
   phone: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const addContact = async (contactData: IContact) => {

@@ -44,7 +44,7 @@ const BroadcastTable: React.FC = () => {
     }
   };
 
-  const fetchBroadcasts = async () => {
+  const fetchBroadcasts = React.useCallback(async () => {
     setLoading(true);
 
     try {
@@ -55,11 +55,11 @@ const BroadcastTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
 
   useEffect(() => {
     fetchBroadcasts();
-  }, []);
+  }, [fetchBroadcasts]);
 
   const data = broadcasts.map((broadcast) => ({
     id: broadcast.id,

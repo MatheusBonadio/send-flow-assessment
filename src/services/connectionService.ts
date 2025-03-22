@@ -8,10 +8,10 @@ import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseSe
 const connectionsCollection = (userId: string) => collection(db, `users/${userId}/connections`);
 
 export interface IConnection {
-  id: string;
+  id?: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const addConnection = async (connectionData: IConnection) => {

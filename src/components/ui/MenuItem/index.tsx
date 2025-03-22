@@ -4,7 +4,6 @@ import React, { useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import CircularProgress from '@mui/material/CircularProgress';
 
 export interface CustomMenuItemProps {
   href: string;
@@ -25,7 +24,7 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
 }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleClick = () => {
     if (disabled) return;
@@ -47,7 +46,7 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
         onClick={handleClick}
         {...props}
       >
-        {isPending ? (
+        {/* {isPending ? (
           <CircularProgress
             size={16}
             className="mr-2"
@@ -55,7 +54,8 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
           />
         ) : (
           icon && <div className="mr-2">{icon}</div>
-        )}
+        )} */}
+        <div className="mr-2">{icon}</div>
         {children}
       </div>
     </Link>

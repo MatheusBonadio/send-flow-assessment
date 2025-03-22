@@ -43,7 +43,7 @@ const ContactTable: React.FC = () => {
     }
   };
 
-  const fetchContacts = async () => {
+  const fetchContacts = React.useCallback(async () => {
     setLoading(true);
 
     try {
@@ -54,11 +54,11 @@ const ContactTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAlert]);
 
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [fetchContacts]);
 
   const data = contacts.map((contact) => ({
     id: contact.id,

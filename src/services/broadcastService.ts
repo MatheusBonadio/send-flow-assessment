@@ -10,14 +10,14 @@ import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseSe
 const broadcastsCollection = (userId: string) => collection(db, `users/${userId}/broadcasts`);
 
 export interface IBroadcast {
-  id: string;
+  id?: string;
   name: string;
   scheduledAt: Date;
   messageBody: string;
   connectionID: string;
-  connectionName: string;
+  connectionName?: string;
   contactsIDs: string[];
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export const addBroadcast = async (broadcastData: IBroadcast) => {

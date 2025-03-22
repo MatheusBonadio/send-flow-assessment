@@ -9,7 +9,7 @@ import {
   getAllMessagesSent,
 } from '@/services/messageService';
 import { useAlert } from '@/utils/AlertProvider';
-import { AccessAlarmOutlined, Check } from '@mui/icons-material';
+import { AccessAlarmOutlined, Send } from '@mui/icons-material';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },
@@ -27,7 +27,7 @@ const MessageTable: React.FC = () => {
   );
   const { showAlert } = useAlert();
 
-  const fetchMessages = async () => {
+  const fetchMessages = React.useCallback(async () => {
     setLoading(true);
 
     try {
@@ -44,11 +44,11 @@ const MessageTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, showAlert]);
 
   useEffect(() => {
     fetchMessages();
-  }, [statusFilter]);
+  }, [fetchMessages]);
 
   const data = messages.map((message) => ({
     id: message.id,
@@ -67,7 +67,7 @@ const MessageTable: React.FC = () => {
         label={message.status === 'scheduled' ? 'Agendada' : 'Enviada'}
         color={message.status === 'scheduled' ? 'default' : 'success'}
         size="small"
-        variant={message.status === 'scheduled' ? 'outlined' : 'filled'}
+        variant="outlined"
         className="my-2"
       />
     ),
@@ -122,7 +122,7 @@ const MessageTable: React.FC = () => {
                   : 'none',
             }}
           >
-            <Check
+            <Send
               style={{
                 fontSize: '16px',
                 position: 'relative',
@@ -130,7 +130,7 @@ const MessageTable: React.FC = () => {
                 left: -4,
               }}
             />
-            Entregue
+            Enviada
           </div>
         </div>
         <CustomTable columns={columns} data={data} loading={loading} />

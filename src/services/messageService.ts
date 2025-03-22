@@ -9,7 +9,7 @@ import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseSe
 const messagesCollection = (userId: string) => collection(db, `users/${userId}/messages`);
 
 export interface IMessage {
-  id: string;
+  id?: string;
   body: string;
   contactID: string;
   contactName: string;

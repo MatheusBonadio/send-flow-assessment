@@ -80,6 +80,4 @@ Este projeto está sob a licença **MIT**. Sinta-se à vontade para usá-lo e mo
 
 ---
 
----
-
 Feito com ❤️ por Matheus Bonadio
