@@ -154,13 +154,13 @@ export default function Login() {
                     <label className="text-sm leading-none font-medium">
                       Senha
                     </label>
-                    <Link
+                    {/* <Link
                       href="#"
                       underline="hover"
                       className="!text-xs !text-gray-900"
                     >
                       Esqueceu sua senha?
-                    </Link>
+                    </Link> */}
                   </div>
                   <input
                     type="password"
@@ -203,7 +203,7 @@ export default function Login() {
                   className="!decoration-inherit underline-offset-4"
                   color="#288d70"
                 >
-                  Registrar
+                  Criar conta
                 </Link>
               </Typography>
             </div>

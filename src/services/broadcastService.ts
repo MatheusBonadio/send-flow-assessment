@@ -7,7 +7,7 @@ import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from "firebase/firestore";
 import { getConnection } from './connectionService';
-import { addMessage } from './messageService'; // Assuming addMessage is defined in messageService
+import { addMessage } from './messageService';
 
 const broadcastsCollection = (userId: string) => collection(db, `users/${userId}/broadcasts`);
 
