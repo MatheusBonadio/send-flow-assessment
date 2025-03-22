@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Chip, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import CustomTable from '@/components/ui/Table';
 import { IBroadcast } from '@/services/broadcastService';
 import { getAllBroadcasts, deleteBroadcast } from '@/services/broadcastService';
@@ -15,8 +14,8 @@ import { useAlert } from '@/utils/AlertProvider';
 const columns = [
   { id: 'name', label: 'Nome' },
   { id: 'connectionName', label: 'Conexão' },
-  { id: 'scheduledTime', label: 'Hora Agendada' },
-  { id: 'status', label: 'Status' },
+  { id: 'scheduledAt', label: 'Hora Agendada' },
+  { id: 'contactsIDs', label: 'Qtd contatos' },
   { id: 'actions', label: 'Ações' },
 ];
 
@@ -66,26 +65,10 @@ const BroadcastTable: React.FC = () => {
     id: broadcast.id,
     connectionName: broadcast.connectionName,
     name: broadcast.name,
-    scheduledTime: broadcast.scheduledTime,
-    status: (
-      <Chip
-        label={broadcast.status === 'scheduled' ? 'Agendado' : 'Enviado'}
-        color={broadcast.status === 'scheduled' ? 'primary' : 'success'}
-        size="small"
-        variant="outlined"
-      />
-    ),
+    scheduledAt: broadcast.scheduledAt,
+    contactsIDs: broadcast.contactsIDs.length,
     actions: (
       <div className="flex gap-2">
-        <IconButton
-          aria-label="edit"
-          onClick={() => {
-            setSelectedBroadcast(broadcast);
-            setOpenModal(true);
-          }}
-        >
-          <EditIcon />
-        </IconButton>
         <IconButton
           aria-label="delete"
           onClick={() => {

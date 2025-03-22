@@ -16,8 +16,7 @@ export interface IContact {
 export interface IBroadcast {
     id: string;
     name: string;
-    status: 'scheduled' | 'sent';
-    scheduledTime: string;
+    scheduledAt: Date;
     messageBody: string;
     connectionID: string;
     connectionName: string;
@@ -32,4 +31,15 @@ export interface IUser {
     email: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface IMessage {
+    id: string;
+    body: string;
+    contactID: string;
+    contactName: string;
+    broadcastID: string;
+    broadcastName: string;
+    status: 'scheduled' | 'sent';
+    scheduledAt: Date;
 }

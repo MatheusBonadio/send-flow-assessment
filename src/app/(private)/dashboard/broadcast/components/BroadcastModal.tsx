@@ -6,11 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CustomModal, CustomButton, CustomInput } from '@/components/ui';
 import { useAlert } from '@/utils/AlertProvider';
-import {
-  addBroadcast,
-  IBroadcast,
-  updateBroadcast,
-} from '@/services/broadcastService';
+import { addBroadcast, IBroadcast } from '@/services/broadcastService';
 import { Save } from '@mui/icons-material';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
 import { getAllContacts } from '@/services/contactService';
@@ -28,10 +24,7 @@ interface IProps {
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'O nome é obrigatório'),
-  status: z.enum(['scheduled', 'sent'], {
-    errorMap: () => ({ message: 'O status é obrigatório' }),
-  }),
-  scheduledTime: z.string().min(1, 'O horário de agendamento é obrigatório'),
+  scheduledAt: z.string().min(1, 'O horário de agendamento é obrigatório'),
   messageBody: z.string().min(1, 'A mensagem é obrigatório'),
   connectionID: z.string().min(1, 'O ID de conexão é obrigatório'),
   contactsIDs: z.array(z.string()).min(1, 'Pelo menos um contato é necessário'),
@@ -66,8 +59,7 @@ export default function BroadcastModal({
     defaultValues: {
       id: broadcast?.id || '',
       name: broadcast?.name || '',
-      status: broadcast?.status || 'scheduled',
-      scheduledTime: broadcast?.scheduledTime || '',
+      scheduledAt: broadcast?.scheduledAt || '',
       messageBody: broadcast?.messageBody || '',
       connectionID: broadcast?.connectionID || '',
       contactsIDs: broadcast?.contactsIDs || [],
@@ -79,8 +71,7 @@ export default function BroadcastModal({
       reset({
         id: broadcast.id,
         name: broadcast.name,
-        status: broadcast.status,
-        scheduledTime: broadcast.scheduledTime,
+        scheduledAt: broadcast.scheduledAt,
         messageBody: broadcast.messageBody,
         connectionID: broadcast.connectionID,
         contactsIDs: broadcast.contactsIDs,
@@ -89,8 +80,7 @@ export default function BroadcastModal({
       reset({
         id: '',
         name: '',
-        status: 'scheduled',
-        scheduledTime: '',
+        scheduledAt: '',
         messageBody: '',
         connectionID: '',
         contactsIDs: [],
@@ -101,9 +91,7 @@ export default function BroadcastModal({
   async function onSubmit(values: FormData) {
     setLoading(true);
 
-    if (broadcast && broadcast.id)
-      await handleUpdateBroadcast(broadcast.id, values);
-    else await handleAddBroadcast(values);
+    await handleAddBroadcast(values);
 
     refetch();
     onClose();
@@ -114,18 +102,6 @@ export default function BroadcastModal({
     try {
       await addBroadcast(newBroadcast);
       showAlert('Transmissão agendada com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    }
-  };
-
-  const handleUpdateBroadcast = async (
-    id: string,
-    updatedBroadcast: FormData,
-  ) => {
-    try {
-      await updateBroadcast(id, updatedBroadcast);
-      showAlert('Transmissão atualizada com sucesso!', 'success');
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     }
@@ -281,9 +257,9 @@ export default function BroadcastModal({
           type="datetime-local"
           label="Horário Agendado"
           focused
-          error={!!errors.scheduledTime}
-          helperText={errors.scheduledTime?.message}
-          {...register('scheduledTime')}
+          error={!!errors.scheduledAt}
+          helperText={errors.scheduledAt?.message}
+          {...register('scheduledAt')}
         />
       </form>
     </CustomModal>

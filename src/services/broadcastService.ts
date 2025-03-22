@@ -1,26 +1,25 @@
 'use server';
 
-import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/auth/firebase';
+import { db, collection, doc, setDoc, getDoc, getDocs, deleteDoc } from '@/auth/firebase';
 import { cookies } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
 import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from "firebase/firestore";
 import { getConnection } from './connectionService';
+import { addMessage } from './messageService'; // Assuming addMessage is defined in messageService
 
 const broadcastsCollection = (userId: string) => collection(db, `users/${userId}/broadcasts`);
 
 export interface IBroadcast {
   id: string;
   name: string;
-  status: 'scheduled' | 'sent';
-  scheduledTime: Date;
+  scheduledAt: Date;
   messageBody: string;
   connectionID: string;
   connectionName: string;
   contactsIDs: string[];
   createdAt: Date;
-  updatedAt: Date;
 }
 
 const getAuthenticatedUserTokens = async () => {
@@ -41,10 +40,22 @@ export const addBroadcast = async (broadcastData: IBroadcast) => {
 
     broadcastData.id = uuidv4();
     broadcastData.createdAt = new Date();
-    broadcastData.updatedAt = new Date();
 
     const broadcastRef = doc(broadcastsCollection(user.uid), broadcastData.id);
     await setDoc(broadcastRef, broadcastData);
+
+    for (const contactId of broadcastData.contactsIDs) {
+      await addMessage({
+        id: uuidv4(),
+        body: broadcastData.messageBody,
+        contactID: contactId,
+        contactName: '',
+        broadcastID: broadcastData.id,
+        broadcastName: broadcastData.name,
+        status: 'scheduled',
+        scheduledAt: broadcastData.scheduledAt
+      });
+    }
   } catch {
     throw new Error("Não foi possível adicionar transmissão");
   }
@@ -77,8 +88,7 @@ export const getAllBroadcasts = async () => {
 
       return {
         ...data,
-        scheduledTime: data.scheduledTime instanceof Timestamp ? data.scheduledTime.toDate() : data.scheduledTime,
-        updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
+        scheduledAt: data.scheduledAt instanceof Timestamp ? data.scheduledAt.toDate() : data.scheduledAt,
         createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt
       };
     });
@@ -88,20 +98,6 @@ export const getAllBroadcasts = async () => {
     return broadcasts;
   } catch {
     throw new Error("Não foi possível obter todas as transmissões");
-  }
-};
-
-
-export const updateBroadcast = async (broadcastId: string, updatedData: IBroadcast) => {
-  try {
-    const user = (await getAuthenticatedUserTokens()).decodedToken;
-
-    updatedData.updatedAt = new Date();
-
-    const broadcastRef = doc(broadcastsCollection(user.uid), broadcastId);
-    await updateDoc(broadcastRef, { ...updatedData });
-  } catch {
-    throw new Error("Não foi possível atualizar transmissão");
   }
 };
 

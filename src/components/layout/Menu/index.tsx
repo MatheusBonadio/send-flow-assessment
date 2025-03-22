@@ -5,6 +5,7 @@ import {
   ContactsOutlined,
   DashboardOutlined,
   Logout,
+  MessageOutlined,
   Podcasts,
   WhatsApp,
 } from '@mui/icons-material';
@@ -80,6 +81,16 @@ export function Menu() {
           }
         >
           Transmissões
+        </CustomMenuItem>
+        <CustomMenuItem
+          href="/dashboard/messages"
+          icon={
+            <MessageOutlined
+              style={{ fontSize: '16px', position: 'relative', top: -1 }}
+            />
+          }
+        >
+          Mensagens
         </CustomMenuItem>
       </div>
       <div className="flex flex-col gap-1 p-2">
