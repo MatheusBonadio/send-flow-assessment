@@ -1,12 +1,10 @@
 'use server';
 
 import { db, collection, doc, setDoc, getDoc, getDocs } from '@/auth/firebase';
-import { cookies } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
-import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from 'firebase/firestore';
 import { getContact } from './contactService';
+import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseService';
 
 const messagesCollection = (userId: string) => collection(db, `users/${userId}/messages`);
 
@@ -21,21 +19,11 @@ export interface IMessage {
   scheduledAt: Date;
 }
 
-const getAuthenticatedUserTokens = async () => {  
-  try {
-    const tokens = await getTokens(await cookies(), authConfig);
-
-    if (!tokens) throw new Error('Usuário não autenticado.');
-
-    return tokens;
-  } catch {
-    throw new Error('Não foi possível obter os tokens do usuário autenticado');
-  }
-};
-
 export const addMessage = async (messageData: IMessage) => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    await checkAndUpdateUserDocument(user.uid);
 
     messageData.id = uuidv4();
     const messageRef = doc(messagesCollection(user.uid), messageData.id);

@@ -1,9 +1,6 @@
 'use server';
 
 import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/auth/firebase';
-import { cookies } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
-import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 
 const contactsCollection = (userId: string) => collection(db, `users/${userId}/contacts`);
@@ -16,21 +13,11 @@ export interface IContact {
   updatedAt: Date;
 }
 
-const getAuthenticatedUserTokens = async () => {
-  try {
-    const tokens = await getTokens(await cookies(), authConfig);
-
-    if (!tokens) throw new Error("Usuário não autenticado.");
-
-    return tokens;
-  } catch {
-    throw new Error("Não foi possível obter os tokens do usuário autenticado");
-  }
-};
-
 export const addContact = async (contactData: IContact) => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    await checkAndUpdateUserDocument(user.uid);
 
     contactData.id = uuidv4();
     contactData.createdAt = new Date();
@@ -58,10 +45,13 @@ export const getContact = async (contactId: string) => {
 };
 
 import { Timestamp } from "firebase/firestore";
+import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseService';
 
 export const getAllContacts = async () => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    await checkAndUpdateUserDocument(user.uid);
 
     const querySnapshot = await getDocs(contactsCollection(user.uid));
     const contacts: IContact[] = [];

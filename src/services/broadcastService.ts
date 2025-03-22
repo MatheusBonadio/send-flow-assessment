@@ -1,13 +1,11 @@
 'use server';
 
 import { db, collection, doc, setDoc, getDoc, getDocs, deleteDoc } from '@/auth/firebase';
-import { cookies } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
-import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from "firebase/firestore";
 import { getConnection } from './connectionService';
 import { addMessage } from './messageService';
+import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseService';
 
 const broadcastsCollection = (userId: string) => collection(db, `users/${userId}/broadcasts`);
 
@@ -22,21 +20,11 @@ export interface IBroadcast {
   createdAt: Date;
 }
 
-const getAuthenticatedUserTokens = async () => {
-  try {
-    const tokens = await getTokens(await cookies(), authConfig);
-
-    if (!tokens) throw new Error("Usuário não autenticado.");
-
-    return tokens;
-  } catch {
-    throw new Error("Não foi possível obter os tokens do usuário autenticado");
-  }
-};
-
 export const addBroadcast = async (broadcastData: IBroadcast) => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    await checkAndUpdateUserDocument(user.uid);
 
     broadcastData.id = uuidv4();
     broadcastData.scheduledAt = new Date(broadcastData.scheduledAt);

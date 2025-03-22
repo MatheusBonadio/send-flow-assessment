@@ -1,11 +1,9 @@
 'use server';
 
 import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/auth/firebase';
-import { cookies } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
-import { authConfig } from '@/config/serverConfig';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from "firebase/firestore";
+import { checkAndUpdateUserDocument, getAuthenticatedUserTokens } from './baseService';
 
 const connectionsCollection = (userId: string) => collection(db, `users/${userId}/connections`);
 
@@ -16,21 +14,11 @@ export interface IConnection {
   updatedAt: Date;
 }
 
-const getAuthenticatedUserTokens = async () => {
-  try {
-    const tokens = await getTokens(await cookies(), authConfig);
-
-    if (!tokens) throw new Error("Usuário não autenticado.");
-
-    return tokens;
-  } catch {
-    throw new Error("Não foi possível obter os tokens do usuário autenticado");
-  }
-};
-
 export const addConnection = async (connectionData: IConnection) => {
   try {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    await checkAndUpdateUserDocument(user.uid);
 
     connectionData.id = uuidv4();
     connectionData.createdAt = new Date();
