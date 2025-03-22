@@ -65,7 +65,7 @@ const BroadcastTable: React.FC = () => {
     id: broadcast.id,
     connectionName: broadcast.connectionName,
     name: broadcast.name,
-    scheduledAt: broadcast.scheduledAt,
+    scheduledAt: broadcast.scheduledAt.toLocaleString(),
     contactsIDs: broadcast.contactsIDs.length,
     actions: (
       <div className="flex gap-2">

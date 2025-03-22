@@ -39,7 +39,8 @@ export const addBroadcast = async (broadcastData: IBroadcast) => {
     const user = (await getAuthenticatedUserTokens()).decodedToken;
 
     broadcastData.id = uuidv4();
-    broadcastData.createdAt = new Date();
+    broadcastData.scheduledAt = new Date(broadcastData.scheduledAt);
+    broadcastData.createdAt = new Date(); 
 
     const broadcastRef = doc(broadcastsCollection(user.uid), broadcastData.id);
     await setDoc(broadcastRef, broadcastData);

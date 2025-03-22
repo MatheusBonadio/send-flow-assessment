@@ -24,8 +24,10 @@ interface IProps {
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'O nome é obrigatório'),
-  scheduledAt: z.string().min(1, 'O horário de agendamento é obrigatório'),
-  messageBody: z.string().min(1, 'A mensagem é obrigatório'),
+  scheduledAt: z.coerce.date().refine((date) => date > new Date(), {
+    message: 'O horário de agendamento deve ser no futuro',
+  }),
+  messageBody: z.string().min(1, 'A mensagem é obrigatória'),
   connectionID: z.string().min(1, 'O ID de conexão é obrigatório'),
   contactsIDs: z.array(z.string()).min(1, 'Pelo menos um contato é necessário'),
 });
@@ -59,7 +61,9 @@ export default function BroadcastModal({
     defaultValues: {
       id: broadcast?.id || '',
       name: broadcast?.name || '',
-      scheduledAt: broadcast?.scheduledAt || '',
+      scheduledAt: broadcast?.scheduledAt
+        ? new Date(broadcast.scheduledAt)
+        : undefined,
       messageBody: broadcast?.messageBody || '',
       connectionID: broadcast?.connectionID || '',
       contactsIDs: broadcast?.contactsIDs || [],
@@ -80,7 +84,7 @@ export default function BroadcastModal({
       reset({
         id: '',
         name: '',
-        scheduledAt: '',
+        scheduledAt: undefined,
         messageBody: '',
         connectionID: '',
         contactsIDs: [],
