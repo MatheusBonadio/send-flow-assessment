@@ -108,7 +108,7 @@ const MessageTable: React.FC = () => {
                 left: -4,
               }}
             />
-            Agendada
+            Agendadas
           </div>
           <div
             onClick={() => toggleStatusFilter('sent')}
@@ -130,7 +130,7 @@ const MessageTable: React.FC = () => {
                 left: -4,
               }}
             />
-            Enviada
+            Enviadas
           </div>
         </div>
         <CustomTable columns={columns} data={data} loading={loading} />

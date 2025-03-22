@@ -97,6 +97,16 @@ const getAllMessagesByStatus = async (status: 'scheduled' | 'sent') => {
   }
 };
 
+export const getMessageCount = async (): Promise<number> => {
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    const querySnapshot = await getDocs(messagesCollection(user.uid));
+    return querySnapshot.size;
+  } catch {
+    throw new Error("Não foi possível obter a quantidade de mensagens");
+  }
+};
 
 export const getAllMessagesScheduled = async () => getAllMessagesByStatus('scheduled');
 export const getAllMessagesSent = async() => getAllMessagesByStatus('sent');

@@ -96,3 +96,14 @@ export const deleteContact = async (contactId: string) => {
     throw new Error("Não foi possível excluir contato");
   }
 };
+
+export const getContactCount = async (): Promise<number> => {
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    const querySnapshot = await getDocs(contactsCollection(user.uid));
+    return querySnapshot.size;
+  } catch {
+    throw new Error("Não foi possível obter a quantidade de contatos");
+  }
+};

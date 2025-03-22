@@ -91,3 +91,14 @@ export const deleteConnection = async (connectionId: string) => {
     throw new Error("Não foi possível excluir conexão");
   }
 };
+
+export const getConnectionCount = async (): Promise<number> => {
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    const querySnapshot = await getDocs(connectionsCollection(user.uid));
+    return querySnapshot.size;
+  } catch {
+    throw new Error("Não foi possível obter a quantidade de conexões");
+  }
+};

@@ -55,7 +55,7 @@ export default function Register() {
           <h1 className="text-xl font-semibold tracking-tight">
             Crie sua conta
           </h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-center text-sm text-gray-600">
             Preencha as informações abaixo para registrar-se.
           </p>
         </div>
@@ -86,7 +86,6 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 id="password"
-                placeholder="••••••••"
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-gray-500 focus:outline-0 focus:outline-gray-400 sm:text-sm"
                 required
                 style={{ WebkitBoxShadow: '0 0 0px 1000px #fff inset' }}
@@ -102,7 +101,6 @@ export default function Register() {
                 value={confirmation}
                 onChange={(e) => setConfirmation(e.target.value)}
                 id="confirm-password"
-                placeholder="••••••••"
                 className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-gray-500 focus:outline-0 focus:outline-gray-400 sm:text-sm"
                 required
                 style={{ WebkitBoxShadow: '0 0 0px 1000px #fff inset' }}

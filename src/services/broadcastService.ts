@@ -100,3 +100,14 @@ export const deleteBroadcast = async (broadcastId: string) => {
     throw new Error("Não foi possível excluir transmissão");
   }
 };
+
+export const getBroadcastCount = async (): Promise<number> => {
+  try {
+    const user = (await getAuthenticatedUserTokens()).decodedToken;
+
+    const querySnapshot = await getDocs(broadcastsCollection(user.uid));
+    return querySnapshot.size;
+  } catch {
+    throw new Error("Não foi possível obter a quantidade de transmissões");
+  }
+};
