@@ -1,15 +1,27 @@
-import { z } from 'zod';
+export class Broadcast {
+  id: string;
+  name: string;
+  scheduledAt: Date;
+  messageBody: string;
+  connectionID: string;
+  connectionName?: string;
+  contactsIDs: string[];
 
-export const broadcastSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1),
-  scheduledAt: z.date(),
-  messageBody: z.string().min(1),
-  connectionID: z.string(),
-  connectionName: z.string(),
-  contactsIDs: z.array(z.string()),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-export type Broadcast = z.infer<typeof broadcastSchema>;
+  constructor(
+    id: string,
+    name: string,
+    scheduledAt: Date,
+    messageBody: string,
+    connectionID: string,
+    contactsIDs: string[],
+    connectionName?: string,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.scheduledAt = scheduledAt;
+    this.messageBody = messageBody;
+    this.connectionID = connectionID;
+    this.contactsIDs = contactsIDs;
+    this.connectionName = connectionName ?? '';
+  }
+}
