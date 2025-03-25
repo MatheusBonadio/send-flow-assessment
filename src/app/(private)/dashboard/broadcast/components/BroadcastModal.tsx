@@ -18,7 +18,6 @@ interface IProps {
   open: boolean;
   onClose: () => void;
   broadcast?: IBroadcast;
-  refetch: () => void;
 }
 
 const formSchema = z.object({
@@ -35,12 +34,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function BroadcastModal({
-  open,
-  onClose,
-  broadcast,
-  refetch,
-}: IProps) {
+export default function BroadcastModal({ open, onClose, broadcast }: IProps) {
   const [loading, setLoading] = useState(false);
   const [contacts, setContacts] = useState<{ id: string; name: string }[]>([]);
   const [connections, setConnections] = useState<
@@ -98,7 +92,6 @@ export default function BroadcastModal({
 
     await handleAddBroadcast(values);
 
-    refetch();
     onClose();
     setLoading(false);
   }

@@ -13,7 +13,6 @@ interface IProps {
   open: boolean;
   onClose: () => void;
   contact?: IContact;
-  refetch: () => void;
 }
 
 const formSchema = z.object({
@@ -24,12 +23,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function ContactModal({
-  open,
-  onClose,
-  contact,
-  refetch,
-}: IProps) {
+export default function ContactModal({ open, onClose, contact }: IProps) {
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
@@ -69,7 +63,6 @@ export default function ContactModal({
     if (contact && contact.id) await handleUpdateContact(contact.id, values);
     else await handleAddContact(values);
 
-    refetch();
     onClose();
     setLoading(false);
   }

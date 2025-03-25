@@ -7,13 +7,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CustomTable from '@/components/ui/Table';
 import { IConnection } from '@/services/connectionService';
-import {
-  getAllConnections,
-  deleteConnection,
-} from '@/services/connectionService';
+import { deleteConnection } from '@/services/connectionService';
 import ConnectionModal from './ConnectionModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '@/auth/firebase';
+import { useAuth } from '@/auth/AuthContext';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -29,6 +29,7 @@ const ConnectionTable: React.FC = () => {
     IConnection | undefined
   >(undefined);
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   const handleDeleteConnection = async () => {
     if (!selectedConnection) return;
@@ -37,7 +38,6 @@ const ConnectionTable: React.FC = () => {
       if (selectedConnection?.id) await deleteConnection(selectedConnection.id);
 
       showAlert('Conexão excluída com sucesso!', 'success');
-      fetchConnections();
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -45,22 +45,39 @@ const ConnectionTable: React.FC = () => {
     }
   };
 
-  const fetchConnections = React.useCallback(async () => {
-    setLoading(true);
-
-    try {
-      const fetchedConnections = await getAllConnections();
-      setConnections(fetchedConnections);
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showAlert]);
-
   useEffect(() => {
+    const fetchConnections = async () => {
+      setLoading(true);
+
+      try {
+        const connectionsQuery = query(
+          collection(db, `users/${user?.uid}/connections`),
+          orderBy('createdAt', 'asc'),
+        );
+
+        const unsubscribeConnections = onSnapshot(
+          connectionsQuery,
+          (snapshot) => {
+            const updatedConnections = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+            })) as IConnection[];
+
+            setConnections(updatedConnections);
+            setLoading(false);
+          },
+          () => {
+            showAlert('Erro ao sincronizar contatos', 'error');
+          },
+        );
+        return () => unsubscribeConnections();
+      } catch {
+        showAlert('Erro ao carregar contatos', 'error');
+        setLoading(false);
+      }
+    };
+
     fetchConnections();
-  }, [fetchConnections]);
+  }, [showAlert]);
 
   const data = connections.map((connection) => ({
     id: connection.id,
@@ -121,7 +138,6 @@ const ConnectionTable: React.FC = () => {
           <ConnectionModal
             open={openModal}
             onClose={() => setOpenModal(false)}
-            refetch={fetchConnections}
             connection={selectedConnection}
           />
         )}

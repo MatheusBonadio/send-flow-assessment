@@ -6,10 +6,20 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomTable from '@/components/ui/Table';
 import { IBroadcast } from '@/services/broadcastService';
-import { getAllBroadcasts, deleteBroadcast } from '@/services/broadcastService';
+import { deleteBroadcast } from '@/services/broadcastService';
 import BroadcastModal from './BroadcastModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  Timestamp,
+} from 'firebase/firestore';
+import { db } from '@/auth/firebase';
+import { useAuth } from '@/auth/AuthContext';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -28,6 +38,7 @@ const BroadcastTable: React.FC = () => {
     IBroadcast | undefined
   >(undefined);
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   const handleDeleteBroadcast = async () => {
     if (!selectedBroadcast) return;
@@ -36,7 +47,6 @@ const BroadcastTable: React.FC = () => {
       if (selectedBroadcast?.id) await deleteBroadcast(selectedBroadcast.id);
 
       showAlert('Broadcast excluído com sucesso!', 'success');
-      fetchBroadcasts();
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -44,22 +54,69 @@ const BroadcastTable: React.FC = () => {
     }
   };
 
-  const fetchBroadcasts = React.useCallback(async () => {
-    setLoading(true);
-
-    try {
-      const fetchedBroadcasts = await getAllBroadcasts();
-      setBroadcasts(fetchedBroadcasts);
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showAlert]);
-
   useEffect(() => {
+    const fetchBroadcasts = async () => {
+      setLoading(true);
+
+      try {
+        const connectionsSnapshot = await getDocs(
+          collection(db, `users/${user?.uid}/connections`),
+        );
+        const connectionsMap = new Map(
+          connectionsSnapshot.docs.map((doc) => [doc.id, doc.data().name]),
+        );
+
+        const broadcastsQuery = query(
+          collection(db, `users/${user?.uid}/broadcasts`),
+          orderBy('createdAt', 'asc'),
+        );
+
+        const unsubscribeBroadcasts = onSnapshot(
+          broadcastsQuery,
+          (snapshot) => {
+            try {
+              const updatedBroadcasts = snapshot.docs.map((doc) => {
+                const data = doc.data();
+
+                return {
+                  id: doc.id,
+                  name: data.name,
+                  connectionName: connectionsMap.get(data.connectionID) || '',
+                  scheduledAt:
+                    data.scheduledAt instanceof Timestamp
+                      ? data.scheduledAt.toDate()
+                      : data.scheduledAt || null,
+                  contactsIDs: data.contactsIDs,
+                  messageBody: data.messageBody || '',
+                  connectionID: data.connectionID || '',
+                  createdAt:
+                    data.createdAt instanceof Timestamp
+                      ? data.createdAt.toDate()
+                      : data.createdAt || null,
+                } as IBroadcast;
+              });
+
+              setBroadcasts(updatedBroadcasts);
+            } catch {
+              showAlert('Erro ao processar transmissões', 'error');
+            } finally {
+              setLoading(false);
+            }
+          },
+          () => {
+            showAlert('Erro ao sincronizar transmissões', 'error');
+          },
+        );
+
+        return () => unsubscribeBroadcasts();
+      } catch {
+        showAlert('Erro ao carregar contatos', 'error');
+        setLoading(false);
+      }
+    };
+
     fetchBroadcasts();
-  }, [fetchBroadcasts]);
+  }, [showAlert]);
 
   const data = broadcasts.map((broadcast) => ({
     id: broadcast.id,
@@ -114,7 +171,6 @@ const BroadcastTable: React.FC = () => {
           <BroadcastModal
             open={openModal}
             onClose={() => setOpenModal(false)}
-            refetch={fetchBroadcasts}
             broadcast={selectedBroadcast}
           />
         )}

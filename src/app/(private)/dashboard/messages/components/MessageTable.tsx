@@ -4,12 +4,21 @@ import React, { useEffect, useState } from 'react';
 import { Chip } from '@mui/material';
 import CustomTable from '@/components/ui/Table';
 import { IMessage } from '@/services/messageService';
-import {
-  getAllMessagesScheduled,
-  getAllMessagesSent,
-} from '@/services/messageService';
 import { useAlert } from '@/utils/AlertProvider';
 import { AccessAlarmOutlined, Send } from '@mui/icons-material';
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  Query,
+  Timestamp,
+  where,
+} from 'firebase/firestore';
+import { db } from '@/auth/firebase';
+import { useAuth } from '@/auth/AuthContext';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },
@@ -26,29 +35,82 @@ const MessageTable: React.FC = () => {
     'scheduled',
   );
   const { showAlert } = useAlert();
-
-  const fetchMessages = React.useCallback(async () => {
-    setLoading(true);
-
-    try {
-      let fetchedMessages: IMessage[] = [];
-      if (statusFilter === 'scheduled') {
-        fetchedMessages = await getAllMessagesScheduled();
-      } else {
-        fetchedMessages = await getAllMessagesSent();
-      }
-
-      setMessages(fetchedMessages);
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [statusFilter, showAlert]);
+  const { user } = useAuth();
 
   useEffect(() => {
+    const fetchMessages = async () => {
+      setLoading(true);
+
+      try {
+        const contactsSnapshot = await getDocs(
+          collection(db, `users/${user?.uid}/contacts`),
+        );
+        const contactsMap = new Map(
+          contactsSnapshot.docs.map((doc) => [doc.id, doc.data().name]),
+        );
+
+        let messagesQuery: Query<DocumentData>;
+        if (statusFilter === 'scheduled') {
+          messagesQuery = query(
+            collection(db, `users/${user?.uid}/messages`),
+            where('status', '==', 'scheduled'),
+            orderBy('scheduledAt', 'desc'),
+          );
+        } else {
+          messagesQuery = query(
+            collection(db, `users/${user?.uid}/messages`),
+            where('status', '==', 'sent'),
+            orderBy('scheduledAt', 'desc'),
+          );
+        }
+
+        const unsubscribeMessages = onSnapshot(
+          messagesQuery,
+          (snapshot) => {
+            try {
+              const updatedMessages = snapshot.docs.map((doc) => {
+                const data = doc.data();
+
+                return {
+                  id: doc.id,
+                  body: data.body,
+                  contactID: data.contactID,
+                  broadcastID: data.broadcastID,
+                  broadcastName: data.broadcastName,
+                  status: data.status,
+                  scheduledAt:
+                    data.scheduledAt instanceof Timestamp
+                      ? data.scheduledAt.toDate()
+                      : data.scheduledAt || null,
+                  contactName:
+                    contactsMap.get(data.contactID) || 'Desconhecido',
+                };
+              });
+
+              setMessages(updatedMessages);
+            } catch (error) {
+              console.error('Erro ao carregar mensagens:', error);
+              showAlert('Erro ao carregar mensagens', 'error');
+            } finally {
+              setLoading(false);
+            }
+          },
+          (error) => {
+            console.error('Erro ao sincronizar mensagens:', error);
+            showAlert('Erro ao sincronizar mensagens', 'error');
+          },
+        );
+
+        return () => unsubscribeMessages();
+      } catch (error) {
+        console.error('Erro ao buscar contatos:', error);
+        showAlert('Erro ao buscar contatos', 'error');
+        setLoading(false);
+      }
+    };
+
     fetchMessages();
-  }, [fetchMessages]);
+  }, [showAlert, statusFilter]);
 
   const data = messages.map((message) => ({
     id: message.id,

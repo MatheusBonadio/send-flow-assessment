@@ -17,7 +17,6 @@ interface IProps {
   open: boolean;
   onClose: () => void;
   connection?: IConnection;
-  refetch: () => void;
 }
 
 const formSchema = z.object({
@@ -27,12 +26,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function ConnectionModal({
-  open,
-  onClose,
-  connection,
-  refetch,
-}: IProps) {
+export default function ConnectionModal({ open, onClose, connection }: IProps) {
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
@@ -70,7 +64,6 @@ export default function ConnectionModal({
       await handleUpdateConnection(connection.id, values);
     else await handleAddConnection(values);
 
-    refetch();
     onClose();
     setLoading(false);
   }

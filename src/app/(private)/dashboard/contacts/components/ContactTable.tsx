@@ -7,10 +7,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CustomTable from '@/components/ui/Table';
 import { IContact } from '@/services/contactService';
-import { getAllContacts, deleteContact } from '@/services/contactService';
+import { deleteContact } from '@/services/contactService';
 import ContactModal from './ContactModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '@/auth/firebase';
+import { useAuth } from '@/auth/AuthContext';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -27,6 +30,7 @@ const ContactTable: React.FC = () => {
     undefined,
   );
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   const handleDeleteContact = async () => {
     if (!selectedContact) return;
@@ -35,7 +39,6 @@ const ContactTable: React.FC = () => {
       if (selectedContact?.id) await deleteContact(selectedContact.id);
 
       showAlert('Contato excluído com sucesso!', 'success');
-      fetchContacts();
     } catch (error: unknown) {
       showAlert(String(error), 'error');
     } finally {
@@ -43,22 +46,39 @@ const ContactTable: React.FC = () => {
     }
   };
 
-  const fetchContacts = React.useCallback(async () => {
-    setLoading(true);
-
-    try {
-      const fetchedContacts = await getAllContacts();
-      setContacts(fetchedContacts);
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showAlert]);
-
   useEffect(() => {
+    const fetchContacts = async () => {
+      setLoading(true);
+
+      try {
+        const contactsQuery = query(
+          collection(db, `users/${user?.uid}/contacts`),
+          orderBy('createdAt', 'asc'),
+        );
+
+        const unsubscribeContacts = onSnapshot(
+          contactsQuery,
+          (snapshot) => {
+            const updatedContacts = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+            })) as IContact[];
+
+            setContacts(updatedContacts);
+            setLoading(false);
+          },
+          () => {
+            showAlert('Erro ao sincronizar contatos', 'error');
+          },
+        );
+        return () => unsubscribeContacts();
+      } catch {
+        showAlert('Erro ao carregar contatos', 'error');
+        setLoading(false);
+      }
+    };
+
     fetchContacts();
-  }, [fetchContacts]);
+  }, [showAlert]);
 
   const data = contacts.map((contact) => ({
     id: contact.id,
@@ -120,7 +140,6 @@ const ContactTable: React.FC = () => {
           <ContactModal
             open={openModal}
             onClose={() => setOpenModal(false)}
-            refetch={fetchContacts}
             contact={selectedContact}
           />
         )}

@@ -8,12 +8,11 @@ import {
   PodcastsOutlined,
   WhatsApp,
 } from '@mui/icons-material';
-import { getContactCount } from '@/services/contactService';
-import { CircularProgress } from '@mui/material';
+import { Skeleton } from '@mui/material';
 import { useAlert } from '@/utils/AlertProvider';
-import { getConnectionCount } from '@/services/connectionService';
-import { getBroadcastCount } from '@/services/broadcastService';
-import { getMessageCount } from '@/services/messageService';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '@/auth/firebase';
+import { useAuth } from '@/auth/AuthContext';
 
 export default function Dashboard() {
   const [contactCount, setContactCount] = useState<number | null>(null);
@@ -21,25 +20,43 @@ export default function Dashboard() {
   const [broadcastsCount, setBroadcastsCount] = useState<number | null>(null);
   const [messagesCount, setMessagesCount] = useState<number | null>(null);
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const contacts = await getContactCount();
-        const connections = await getConnectionCount();
-        const broadcasts = await getBroadcastCount();
-        const messages = await getMessageCount();
+    const unsubscribeContacts = onSnapshot(
+      collection(db, `users/${user?.uid}/contacts`),
+      (snapshot) => setContactCount(snapshot.size),
+      (error) =>
+        showAlert(`Erro ao carregar contatos: ${error.message}`, 'error'),
+    );
 
-        setContactCount(contacts);
-        setConnectionsCount(connections);
-        setBroadcastsCount(broadcasts);
-        setMessagesCount(messages);
-      } catch (error: unknown) {
-        showAlert(String(error), 'error');
-      }
+    const unsubscribeConnections = onSnapshot(
+      collection(db, `users/${user?.uid}/connections`),
+      (snapshot) => setConnectionsCount(snapshot.size),
+      (error) =>
+        showAlert(`Erro ao carregar conexões: ${error.message}`, 'error'),
+    );
+
+    const unsubscribeBroadcasts = onSnapshot(
+      collection(db, `users/${user?.uid}/broadcasts`),
+      (snapshot) => setBroadcastsCount(snapshot.size),
+      (error) =>
+        showAlert(`Erro ao carregar transmissões: ${error.message}`, 'error'),
+    );
+
+    const unsubscribeMessages = onSnapshot(
+      collection(db, `users/${user?.uid}/messages`),
+      (snapshot) => setMessagesCount(snapshot.size),
+      (error) =>
+        showAlert(`Erro ao carregar mensagens: ${error.message}`, 'error'),
+    );
+
+    return () => {
+      unsubscribeContacts();
+      unsubscribeConnections();
+      unsubscribeBroadcasts();
+      unsubscribeMessages();
     };
-
-    fetchData();
   }, [showAlert]);
 
   return (
@@ -58,7 +75,7 @@ export default function Dashboard() {
               contactCount !== null ? (
                 <>{contactCount}</>
               ) : (
-                <CircularProgress size={20} style={{ color: '#000' }} />
+                <Skeleton variant="text" width={50} />
               )
             }
             icon={<ContactsOutlined style={{ fontSize: '18px' }} />}
@@ -69,7 +86,7 @@ export default function Dashboard() {
               connectionsCount !== null ? (
                 <>{connectionsCount}</>
               ) : (
-                <CircularProgress size={20} style={{ color: '#000' }} />
+                <Skeleton variant="text" width={50} />
               )
             }
             icon={<WhatsApp style={{ fontSize: '18px' }} />}
@@ -80,7 +97,7 @@ export default function Dashboard() {
               broadcastsCount !== null ? (
                 <>{broadcastsCount}</>
               ) : (
-                <CircularProgress size={20} style={{ color: '#000' }} />
+                <Skeleton variant="text" width={50} />
               )
             }
             icon={<PodcastsOutlined style={{ fontSize: '18px' }} />}
@@ -91,7 +108,7 @@ export default function Dashboard() {
               messagesCount !== null ? (
                 <>{messagesCount}</>
               ) : (
-                <CircularProgress size={20} style={{ color: '#000' }} />
+                <Skeleton variant="text" width={50} />
               )
             }
             icon={<MessageOutlined style={{ fontSize: '18px' }} />}
