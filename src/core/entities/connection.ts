@@ -1,10 +1,9 @@
-import { z } from 'zod';
+export class Connection {
+  id: string;
+  name: string;
 
-export const connectionSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-export type Connection = z.infer<typeof connectionSchema>;
+  constructor(id: string, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+}

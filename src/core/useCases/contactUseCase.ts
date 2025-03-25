@@ -1,4 +1,3 @@
-// useCases/ContactUseCases.ts
 import { IContactRepository } from "@/core/repositories/IContactRepository";
 import { Contact } from "@/core/entities/contact";
 

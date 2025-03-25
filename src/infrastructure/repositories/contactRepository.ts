@@ -25,8 +25,8 @@ export class ContactRepository implements IContactRepository {
       id: uuidv4(),
       name: contact.name,
       phone: contact.phone,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     return new Contact(docRef.id, contact.name, contact.phone);
@@ -68,7 +68,7 @@ export class ContactRepository implements IContactRepository {
     await updateDoc(doc(contactsCol, id), {
       name: contact.name,
       phone: contact.phone,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     });
     return contact;
   }
