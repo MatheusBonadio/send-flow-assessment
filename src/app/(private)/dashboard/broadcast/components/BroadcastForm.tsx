@@ -12,7 +12,7 @@ const formSchema = z.object({
   scheduledAt: z.coerce.date().refine((date) => date > new Date(), {
     message: 'O horário de agendamento deve ser no futuro',
   }),
-  messageBody: z.string().min(1, 'A mensagem é obrigatória'),
+  body: z.string().min(1, 'A mensagem é obrigatória'),
   connectionID: z.string().min(1, 'O ID de conexão é obrigatório'),
   connectionName: z.string().optional(),
   contactsIDs: z.array(z.string()).min(1, 'Pelo menos um contato é necessário'),
@@ -115,17 +115,17 @@ export const BroadcastForm: React.FC<BroadcastFormProps> = ({
       <TextField
         className="w-full"
         label="Mensagem"
-        error={!!errors.messageBody}
-        helperText={errors.messageBody?.message}
+        error={!!errors.body}
+        helperText={errors.body?.message}
         multiline
         rows={3}
-        {...register('messageBody')}
+        {...register('body')}
       />
 
       <CustomInput
         className="w-full"
         type="datetime-local"
-        label="Horário Agendado"
+        label="Agendado para"
         error={!!errors.scheduledAt}
         helperText={errors.scheduledAt?.message}
         {...register('scheduledAt')}

@@ -1,14 +1,30 @@
-import { z } from 'zod';
+export class Message {
+  id: string;
+  body: string;
+  contactID: string;
+  contactName?: string;
+  broadcastID: string;
+  broadcastName: string;
+  status: 'scheduled' | 'sent';
+  scheduledAt: Date;
 
-export const messageSchema = z.object({
-  id: z.string(),
-  body: z.string().min(1),
-  contactID: z.string(),
-  contactName: z.string(),
-  broadcastID: z.string(),
-  broadcastName: z.string(),
-  status: z.enum(['scheduled', 'sent']),
-  scheduledAt: z.date(),
-});
-
-export type Message = z.infer<typeof messageSchema>;
+  constructor(
+    id: string,
+    body: string,
+    contactID: string,
+    broadcastID: string,
+    broadcastName: string,
+    status: 'scheduled' | 'sent',
+    scheduledAt: Date,
+    contactName?: string,
+  ) {
+    this.id = id;
+    this.body = body;
+    this.contactID = contactID;
+    this.contactName = contactName ?? '';
+    this.broadcastID = broadcastID;
+    this.broadcastName = broadcastName;
+    this.status = status;
+    this.scheduledAt = scheduledAt;
+  }
+}

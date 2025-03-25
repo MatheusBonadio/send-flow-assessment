@@ -25,7 +25,7 @@ type BroadcastModalProps = {
 const getDefaultValues = (broadcast?: Broadcast): EditableBroadcastFields => ({
   name: broadcast?.name || '',
   scheduledAt: broadcast?.scheduledAt || new Date(),
-  messageBody: broadcast?.messageBody || '',
+  body: broadcast?.body || '',
   connectionID: broadcast?.connectionID || '',
   contactsIDs: broadcast?.contactsIDs || [],
 });

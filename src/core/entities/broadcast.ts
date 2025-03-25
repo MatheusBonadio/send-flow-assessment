@@ -2,7 +2,7 @@ export class Broadcast {
   id: string;
   name: string;
   scheduledAt: Date;
-  messageBody: string;
+  body: string;
   connectionID: string;
   connectionName?: string;
   contactsIDs: string[];
@@ -11,7 +11,7 @@ export class Broadcast {
     id: string,
     name: string,
     scheduledAt: Date,
-    messageBody: string,
+    body: string,
     connectionID: string,
     contactsIDs: string[],
     connectionName?: string,
@@ -19,7 +19,7 @@ export class Broadcast {
     this.id = id;
     this.name = name;
     this.scheduledAt = scheduledAt;
-    this.messageBody = messageBody;
+    this.body = body;
     this.connectionID = connectionID;
     this.contactsIDs = contactsIDs;
     this.connectionName = connectionName ?? '';

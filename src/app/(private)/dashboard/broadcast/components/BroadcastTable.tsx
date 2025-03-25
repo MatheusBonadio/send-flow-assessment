@@ -13,7 +13,7 @@ import { useContacts } from '@/presentation/hooks/useContacts';
 const columns = [
   { id: 'name', label: 'Nome' },
   { id: 'connectionName', label: 'Conexão' },
-  { id: 'scheduledAt', label: 'Hora Agendada' },
+  { id: 'scheduledAt', label: 'Agendado para' },
   { id: 'contactsIDs', label: 'Qtd contatos' },
   { id: 'actions', label: 'Ações' },
 ];

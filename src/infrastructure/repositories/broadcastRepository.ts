@@ -4,6 +4,7 @@ import { Broadcast } from "@/core/entities/broadcast";
 import { FirebaseFirestore } from "@/infrastructure/firebase/firestore";
 import { onSnapshot, collection, doc, addDoc, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
+import { MessageRepository } from "./messageRepository";
 
 export class BroadcastRepository implements IBroadcastRepository {
   private userId: string;
@@ -26,13 +27,28 @@ export class BroadcastRepository implements IBroadcastRepository {
       id: uuidv4(),
       name: broadcast.name,
       scheduledAt: broadcast.scheduledAt,
-      messageBody: broadcast.messageBody,
+      body: broadcast.body,
       connectionID: broadcast.connectionID,
       contactsIDs: broadcast.contactsIDs,
       createdAt: new Date(),
     });
 
-    return new Broadcast(docRef.id, broadcast.name, broadcast.scheduledAt, broadcast.messageBody, broadcast.connectionID, broadcast.contactsIDs);
+    const messageRepository = new MessageRepository(this.firestore, this.userId);
+
+    for (const contactId of broadcast.contactsIDs) {
+      await messageRepository.create({
+        id: '',
+        body: broadcast.body,
+        contactID: contactId,
+        contactName: '',
+        broadcastID: docRef.id,
+        broadcastName: broadcast.name,
+        status: 'scheduled',
+        scheduledAt: broadcast.scheduledAt
+      });
+    }
+
+    return new Broadcast(docRef.id, broadcast.name, broadcast.scheduledAt, broadcast.body, broadcast.connectionID, broadcast.contactsIDs);
   }
 
   async getById(id: string): Promise<Broadcast | null> {
@@ -42,7 +58,7 @@ export class BroadcastRepository implements IBroadcastRepository {
     if (!docSnapshot.exists()) return null;
     
     const data = docSnapshot.data();
-    return new Broadcast(id, data.name, data.scheduledAt, data.messageBody, data.connectionID, data.contactsIDs);
+    return new Broadcast(id, data.name, data.scheduledAt, data.body, data.connectionID, data.contactsIDs);
   }
 
   getAll(onDataChanged: (broadcasts: Broadcast[]) => void): void {
@@ -63,7 +79,7 @@ export class BroadcastRepository implements IBroadcastRepository {
                 doc.id,
                 data.name,
                 data.scheduledAt.toDate(),
-                data.messageBody,
+                data.body,
                 data.connectionID,
                 data.contactsIDs,
                 connectionName
@@ -74,7 +90,7 @@ export class BroadcastRepository implements IBroadcastRepository {
           onDataChanged(broadcasts);
         },
         (error) => {
-          console.error("Erro ao buscar transmissões: ", error);
+          throw new Error("Erro ao buscar transmissões: ", error);
         }
       );
 

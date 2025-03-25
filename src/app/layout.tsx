@@ -21,7 +21,7 @@ export default async function RootLayout({
   const user = tokens ? toUser(tokens) : null;
 
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="pt-br" className={GeistSans.className}>
       <head />
       <body className={`antialiased`}>
         <SnackbarProviders>
