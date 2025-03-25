@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { app } from '@/infraestructure/firebase/firebase';
+import { app } from '@/infrastructure/firebase/firebase';
 import {
   Card,
   Alert,
@@ -212,7 +212,7 @@ export default function Login() {
         <div
           className="hidden w-[300px] flex-grow items-center justify-center bg-cover bg-center opacity-70 md:flex"
           style={{
-            backgroundImage: 'url(login-photo.webp)',
+            backgroundImage: 'url(images/login-photo.webp)',
           }}
         />
       </div>

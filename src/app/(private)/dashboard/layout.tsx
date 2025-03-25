@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { Menu } from '@/components/layout/Menu';
-import { Body } from '@/components/layout/Body';
+import { Menu } from '@/presentation/components/layout/Menu';
+import { Body } from '@/presentation/components/layout/Body';
 
 export default function RootLayout({
   children,

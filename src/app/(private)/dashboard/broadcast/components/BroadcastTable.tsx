@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CustomTable from '@/components/ui/Table';
+import CustomTable from '@/presentation/components/ui/Table';
 import { IBroadcast } from '@/services/broadcastService';
 import { deleteBroadcast } from '@/services/broadcastService';
 import BroadcastModal from './BroadcastModal';
-import CustomDialog from '@/components/ui/Dialog';
-import { useAlert } from '@/utils/AlertProvider';
+import CustomDialog from '@/presentation/components/ui/Dialog';
+import { useAlert } from '@/presentation/providers/AlertProvider';
 import {
   collection,
   getDocs,
@@ -18,8 +18,8 @@ import {
   query,
   Timestamp,
 } from 'firebase/firestore';
-import { db } from '@/infraestructure/firebase/firebase';
-import { useAuth } from '@/auth/AuthContext';
+import { db } from '@/infrastructure/firebase/firebase';
+import { useAuth } from '@/presentation/contexts/AuthContext';
 
 const columns = [
   { id: 'name', label: 'Nome' },

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import Register from '@/components/layout/Register';
+import Register from '@/presentation/components/layout/Register';
 
 export default function RegisterPage() {
   return (
@@ -12,7 +12,7 @@ export default function RegisterPage() {
           style={{ backgroundColor: '#66c0a6' }}
         >
           <img
-            src="unnichat-logo.png"
+            src="images/unnichat-logo.png"
             alt="Unnichat Logo"
             className="ml-1 w-4"
           />

@@ -1,6 +1,6 @@
 'use client';
 
-import CustomMenuItem from '@/components/ui/MenuItem';
+import CustomMenuItem from '@/presentation/components/ui/MenuItem';
 import {
   ContactsOutlined,
   DashboardOutlined,
@@ -10,9 +10,9 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
-import { app } from '@/infraestructure/firebase/firebase';
+import { app } from '@/infrastructure/firebase/firebase';
 import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/presentation/contexts/AuthContext';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -94,9 +94,7 @@ export function Menu() {
         </CustomMenuItem>
       </div>
       <div className="flex flex-col gap-1 p-2">
-        <div className="px-2 pt-1 text-xs font-medium opacity-70">
-          Credenciais
-        </div>
+        <div className="px-2 pt-1 text-xs font-medium opacity-70">Perfil</div>
         <div className="flex items-center gap-2 p-2 text-sm">
           <Avatar
             alt="Profile"

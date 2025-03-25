@@ -12,12 +12,3 @@ export const messageSchema = z.object({
 });
 
 export type Message = z.infer<typeof messageSchema>;
-
-export const createMessageSchema = messageSchema.pick({
-  body: true,
-  contactID: true,
-  broadcastID: true,
-  scheduledAt: true,
-});
-
-export type CreateMessage = z.infer<typeof createMessageSchema>;

@@ -5,15 +5,15 @@ import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import CustomTable from '@/components/ui/Table';
+import CustomTable from '@/presentation/components/ui/Table';
 import { IConnection } from '@/services/connectionService';
 import { deleteConnection } from '@/services/connectionService';
 import ConnectionModal from './ConnectionModal';
-import CustomDialog from '@/components/ui/Dialog';
-import { useAlert } from '@/utils/AlertProvider';
+import CustomDialog from '@/presentation/components/ui/Dialog';
+import { useAlert } from '@/presentation/providers/AlertProvider';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db } from '@/infraestructure/firebase/firebase';
-import { useAuth } from '@/auth/AuthContext';
+import { db } from '@/infrastructure/firebase/firebase';
+import { useAuth } from '@/presentation/contexts/AuthContext';
 
 const columns = [
   { id: 'name', label: 'Nome' },

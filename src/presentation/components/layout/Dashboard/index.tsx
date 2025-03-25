@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import CustomCard from '@/components/ui/Card';
+import CustomCard from '@/presentation/components/ui/Card';
 import {
   ContactsOutlined,
   MessageOutlined,
@@ -9,13 +9,14 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { Skeleton } from '@mui/material';
-import { useAlert } from '@/utils/AlertProvider';
+import { useAlert } from '@/presentation/providers/AlertProvider';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '@/infraestructure/firebase/firebase';
-import { useAuth } from '@/auth/AuthContext';
+import { db } from '@/infrastructure/firebase/firebase';
+import { useAuth } from '@/presentation/contexts/AuthContext';
+import { useContacts } from '@/presentation/hooks/useContacts';
 
 export default function Dashboard() {
-  const [contactCount, setContactCount] = useState<number | null>(null);
+  const { contactCount } = useContacts();
   const [connectionsCount, setConnectionsCount] = useState<number | null>(null);
   const [broadcastsCount, setBroadcastsCount] = useState<number | null>(null);
   const [messagesCount, setMessagesCount] = useState<number | null>(null);
@@ -23,13 +24,6 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const unsubscribeContacts = onSnapshot(
-      collection(db, `users/${user?.uid}/contacts`),
-      (snapshot) => setContactCount(snapshot.size),
-      (error) =>
-        showAlert(`Erro ao carregar contatos: ${error.message}`, 'error'),
-    );
-
     const unsubscribeConnections = onSnapshot(
       collection(db, `users/${user?.uid}/connections`),
       (snapshot) => setConnectionsCount(snapshot.size),
@@ -52,7 +46,6 @@ export default function Dashboard() {
     );
 
     return () => {
-      unsubscribeContacts();
       unsubscribeConnections();
       unsubscribeBroadcasts();
       unsubscribeMessages();

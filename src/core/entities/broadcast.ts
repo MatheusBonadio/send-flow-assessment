@@ -13,13 +13,3 @@ export const broadcastSchema = z.object({
 });
 
 export type Broadcast = z.infer<typeof broadcastSchema>;
-
-export const createBroadcastSchema = broadcastSchema.pick({
-  name: true,
-  scheduledAt: true,
-  messageBody: true,
-  connectionID: true,
-  contactsIDs: true,
-});
-
-export type CreateBroadcast = z.infer<typeof createBroadcastSchema>;

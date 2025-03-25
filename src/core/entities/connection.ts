@@ -8,7 +8,3 @@ export const connectionSchema = z.object({
 });
 
 export type Connection = z.infer<typeof connectionSchema>;
-
-export const createConnectionSchema = connectionSchema.pick({ name: true });
-
-export type CreateConnection = z.infer<typeof createConnectionSchema>;

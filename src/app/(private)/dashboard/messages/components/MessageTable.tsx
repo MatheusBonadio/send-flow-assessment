@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Chip } from '@mui/material';
-import CustomTable from '@/components/ui/Table';
+import CustomTable from '@/presentation/components/ui/Table';
 import { IMessage } from '@/services/messageService';
-import { useAlert } from '@/utils/AlertProvider';
+import { useAlert } from '@/presentation/providers/AlertProvider';
 import { AccessAlarmOutlined, Send } from '@mui/icons-material';
 import {
   collection,
@@ -17,8 +17,8 @@ import {
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { db } from '@/infraestructure/firebase/firebase';
-import { useAuth } from '@/auth/AuthContext';
+import { db } from '@/infrastructure/firebase/firebase';
+import { useAuth } from '@/presentation/contexts/AuthContext';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },

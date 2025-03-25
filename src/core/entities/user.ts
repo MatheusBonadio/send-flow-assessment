@@ -9,7 +9,3 @@ export const userSchema = z.object({
 });
 
 export type User = z.infer<typeof userSchema>;
-
-export const createUserSchema = userSchema.pick({ name: true, email: true });
-
-export type CreateUser = z.infer<typeof createUserSchema>;

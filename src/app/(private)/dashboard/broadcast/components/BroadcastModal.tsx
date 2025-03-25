@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomModal, CustomButton, CustomInput } from '@/components/ui';
-import { useAlert } from '@/utils/AlertProvider';
+import {
+  CustomModal,
+  CustomButton,
+  CustomInput,
+} from '@/presentation/components/ui';
+import { useAlert } from '@/presentation/providers/AlertProvider';
 import { addBroadcast, IBroadcast } from '@/services/broadcastService';
 import { Save } from '@mui/icons-material';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';

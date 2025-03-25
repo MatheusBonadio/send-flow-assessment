@@ -2,11 +2,11 @@ import './globals.css';
 import { Metadata } from 'next';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies, headers } from 'next/headers';
-import { authConfig } from '@/infraestructure/config/serverConfig';
-import { AuthProvider } from '@/auth/AuthProvider';
+import { authConfig } from '@/infrastructure/config/serverConfig';
+import { AuthProvider } from '@/presentation/providers/AuthProvider';
 import { toUser } from '@/shared/user';
-import { AlertProvider } from '@/utils/AlertProvider';
-import { SnackbarProviders } from '@/utils/AlertProvider';
+import { AlertProvider } from '@/presentation/providers/AlertProvider';
+import { SnackbarProviders } from '@/presentation/providers/AlertProvider';
 import { GeistSans } from 'geist/font/sans';
 
 export default async function RootLayout({
