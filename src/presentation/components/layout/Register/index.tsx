@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/firebase';
+import { app } from '@/infrastructure/firebase/auth';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Card, CardContent } from '@mui/material';
 import { colors } from '@mui/material';
+import { useUsers } from '@/presentation/hooks/useUser';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -21,6 +22,7 @@ export default function Register() {
   const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { addUser } = useUsers();
   const router = useRouter();
 
   async function handleSubmit(event: FormEvent) {
@@ -35,7 +37,13 @@ export default function Register() {
     }
 
     try {
-      await createUserWithEmailAndPassword(getAuth(app), email, password);
+      const newUser = await createUserWithEmailAndPassword(
+        getAuth(app),
+        email,
+        password,
+      );
+      await addUser({ id: newUser.user.uid, email: newUser.user.email ?? '' });
+
       router.push('/login');
     } catch (e) {
       setLoading(false);

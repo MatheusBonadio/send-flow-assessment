@@ -10,7 +10,7 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/firebase';
+import { app } from '@/infrastructure/firebase/auth';
 import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useAuth } from '@/presentation/contexts/AuthContext';
 import { useState } from 'react';

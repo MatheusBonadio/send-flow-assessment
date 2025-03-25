@@ -20,6 +20,10 @@ const DashboardHeader = () => (
     className="flex h-13 items-center gap-3 px-4 font-semibold"
     style={{ borderBottom: '1px solid #e4e4e7' }}
   >
+    {/* <IconButton onClick={toggleMenu}>
+      <MenuOpenOutlined style={{ fontSize: '21px', color: '#000' }} />
+    </IconButton>
+    <div className="mr-2 h-[40%] w-[1px] bg-gray-300"></div> */}
     Dashboard
   </div>
 );

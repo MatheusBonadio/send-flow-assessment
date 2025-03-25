@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/firebase';
+import { app } from '@/infrastructure/firebase/auth';
 import {
   Card,
   Alert,
@@ -20,12 +20,14 @@ import {
   colors,
 } from '@mui/material';
 import { Google } from '@mui/icons-material';
+import { useUsers } from '@/presentation/hooks/useUser';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { addUser } = useUsers();
 
   const auth = getAuth(app);
 
@@ -63,6 +65,13 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
+      const user = result.user;
+
+      const isFirstLogin =
+        user.metadata.creationTime === user.metadata.lastSignInTime;
+
+      if (isFirstLogin)
+        await addUser({ id: user.uid, email: user.email ?? '' });
 
       await fetch('/api/login', {
         headers: {
