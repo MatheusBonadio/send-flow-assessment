@@ -17,7 +17,7 @@ import {
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { db } from '@/auth/firebase';
+import { db } from '@/infraestructure/firebase/firebase';
 import { useAuth } from '@/auth/AuthContext';
 
 const columns = [

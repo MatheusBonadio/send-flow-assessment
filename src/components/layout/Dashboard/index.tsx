@@ -11,7 +11,7 @@ import {
 import { Skeleton } from '@mui/material';
 import { useAlert } from '@/utils/AlertProvider';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '@/auth/firebase';
+import { db } from '@/infraestructure/firebase/firebase';
 import { useAuth } from '@/auth/AuthContext';
 
 export default function Dashboard() {

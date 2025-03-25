@@ -12,7 +12,7 @@ import ConnectionModal from './ConnectionModal';
 import CustomDialog from '@/components/ui/Dialog';
 import { useAlert } from '@/utils/AlertProvider';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db } from '@/auth/firebase';
+import { db } from '@/infraestructure/firebase/firebase';
 import { useAuth } from '@/auth/AuthContext';
 
 const columns = [

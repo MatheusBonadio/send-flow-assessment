@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { app } from '@/auth/firebase';
+import { app } from '@/infraestructure/firebase/firebase';
 import {
   Card,
   Alert,

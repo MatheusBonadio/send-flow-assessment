@@ -1,6 +1,6 @@
 'use server';
 
-import { db, collection, doc, setDoc, getDoc, getDocs, deleteDoc } from '@/auth/firebase';
+import { db, collection, doc, setDoc, getDoc, getDocs, deleteDoc } from '@/infraestructure/firebase/firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { Timestamp } from "firebase/firestore";
 import { getConnection } from './connectionService';

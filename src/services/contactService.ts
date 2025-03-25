@@ -1,6 +1,6 @@
 'use server';
 
-import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/auth/firebase';
+import { db, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from '@/infraestructure/firebase/firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 const contactsCollection = (userId: string) => collection(db, `users/${userId}/contacts`);

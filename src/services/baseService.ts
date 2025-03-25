@@ -1,5 +1,5 @@
-import { db, doc, getDoc, setDoc } from '@/auth/firebase';
-import { authConfig } from '@/config/serverConfig';
+import { db, doc, getDoc, setDoc } from '@/infraestructure/firebase/firebase';
+import { authConfig } from '@/infraestructure/config/serverConfig';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies } from 'next/headers';
 
