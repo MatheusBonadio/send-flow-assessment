@@ -1,131 +1,78 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomModal, CustomButton, CustomInput } from '@/components/ui';
-import { useAlert } from '@/utils/AlertProvider';
-import {
-  addConnection,
-  IConnection,
-  updateConnection,
-} from '@/services/connectionService';
-import { Save } from '@mui/icons-material';
+import { useState, useCallback } from 'react';
+import { Connection } from '@/core/entities/connection';
+import { CustomModal } from '@/presentation/components/ui';
+import { useConnections } from '@/presentation/hooks/useConnections';
+import { useAlert } from '@/presentation/providers/AlertProvider';
+import { ConnectionForm } from './ConnectionForm';
+import { ConnectionModalActions } from './ConnectionModalActions';
 
-interface IProps {
+type EditableConnectionFields = Omit<
+  Connection,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+type ConnectionModalProps = {
   open: boolean;
   onClose: () => void;
-  connection?: IConnection;
-}
+  connection?: Connection;
+};
 
-const formSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, 'O nome é obrigatório'),
+const getDefaultValues = (
+  connection?: Connection,
+): EditableConnectionFields => ({
+  name: connection?.name || '',
 });
 
-type FormData = z.infer<typeof formSchema>;
+const getModalTitle = (connection?: Connection): string =>
+  connection ? 'Editar Conexão' : 'Nova Conexão';
 
-export default function ConnectionModal({ open, onClose, connection }: IProps) {
-  const [loading, setLoading] = useState(false);
+export default function ConnectionModal({
+  open,
+  onClose,
+  connection,
+}: ConnectionModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addConnection, updateConnection } = useConnections();
   const { showAlert } = useAlert();
 
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      id: connection?.id || '',
-      name: connection?.name || '',
+  const handleConnectionSubmission = useCallback(
+    async (connectionData: EditableConnectionFields) => {
+      try {
+        setIsSubmitting(true);
+
+        if (connection?.id)
+          await updateConnection(connection.id, {
+            ...connection,
+            ...connectionData,
+          });
+        else await addConnection(connectionData);
+
+        onClose();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Operação falhou';
+        showAlert(errorMessage, 'error');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-  });
-
-  useEffect(() => {
-    if (connection) {
-      reset({
-        id: connection.id,
-        name: connection.name,
-      });
-    } else {
-      reset({
-        id: '',
-        name: '',
-      });
-    }
-  }, [connection, reset]);
-
-  async function onSubmit(values: FormData) {
-    setLoading(true);
-
-    if (connection && connection.id)
-      await handleUpdateConnection(connection.id, values);
-    else await handleAddConnection(values);
-
-    onClose();
-    setLoading(false);
-  }
-
-  const handleAddConnection = async (newConnection: FormData) => {
-    try {
-      await addConnection(newConnection);
-      showAlert('Conexão adicionada com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    }
-  };
-
-  const handleUpdateConnection = async (
-    id: string,
-    updatedConnection: FormData,
-  ) => {
-    try {
-      await updateConnection(id, updatedConnection);
-      showAlert('Conexão atualizada com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    }
-  };
+    [connection, onClose, addConnection, updateConnection, showAlert],
+  );
 
   return (
     <CustomModal
       open={open}
       onClose={onClose}
-      title={connection ? 'Editar Conexão' : 'Nova Conexão'}
+      title={getModalTitle(connection)}
       actions={
-        <>
-          <CustomButton onClick={onClose} type="button" disabled={loading}>
-            Cancelar
-          </CustomButton>
-          <CustomButton
-            variant="contained"
-            loading={loading}
-            startIcon={<Save />}
-            onClick={() =>
-              document
-                .querySelector('form')
-                ?.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                )
-            }
-          >
-            Salvar
-          </CustomButton>
-        </>
+        <ConnectionModalActions onClose={onClose} loading={isSubmitting} />
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <CustomInput
-          className="w-full"
-          type="text"
-          label="Nome"
-          error={!!errors.name}
-          helperText={errors.name?.message}
-          {...register('name')}
-        />
-      </form>
+      <ConnectionForm
+        onSubmit={handleConnectionSubmission}
+        defaultValues={getDefaultValues(connection)}
+      />
     </CustomModal>
   );
 }

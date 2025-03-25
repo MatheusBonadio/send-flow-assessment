@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Typography, Link } from '@mui/material';
-import Login from '@/components/layout/Login';
+import Login from '@/presentation/components/layout/Login';
 
 export default function LoginPage() {
   return (
@@ -11,7 +11,7 @@ export default function LoginPage() {
           style={{ backgroundColor: '#66c0a6' }}
         >
           <img
-            src="unnichat-logo.png"
+            src="images/unnichat-logo.png"
             alt="Unnichat Logo"
             className="ml-1 w-4"
           />
