@@ -31,12 +31,7 @@ export function Menu() {
   }
 
   return (
-    <menu
-      className="fixed top-0 z-100 flex h-screen w-[255px] flex-col px-2 py-5"
-      style={{
-        backgroundColor: '#fafafa',
-      }}
-    >
+    <menu className="fixed top-0 z-100 flex h-screen w-[255px] flex-col px-2 py-5">
       <Link href="/" className="px-4">
         <span className="text-xl font-bold">UnniChat</span>
       </Link>

@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <div>
       <Menu />
-      <Body>{children}</Body>
+      <Body title={'teste'}>{children}</Body>
     </div>
   );
 }
