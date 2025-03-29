@@ -15,10 +15,12 @@ import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useAuth } from '@/presentation/contexts/AuthContext';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export function Menu() {
   const { user } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const router = useRouter();
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -27,7 +29,8 @@ export function Menu() {
 
     await fetch('/api/logout');
 
-    window.location.href = '/login';
+    router.push('/login');
+    router.refresh();
   }
 
   return (
