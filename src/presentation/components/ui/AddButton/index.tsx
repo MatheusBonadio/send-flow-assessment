@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 interface AddButtonProps {
@@ -6,18 +6,21 @@ interface AddButtonProps {
 }
 
 const AddButton: React.FC<AddButtonProps> = ({ onClick }) => (
-  <IconButton
+  <Button
     onClick={onClick}
+    variant="contained"
+    startIcon={<AddIcon />}
     sx={{
+      borderRadius: '1rem',
       backgroundColor: '#007a55',
-      color: 'white',
-      '&:hover': { backgroundColor: '#164c3b' },
-      padding: '.3rem',
-      borderRadius: '.5rem',
+      '&:hover': {
+        backgroundColor: '#164c3b',
+      },
+      textTransform: 'none',
     }}
   >
-    <AddIcon style={{ fontSize: '18px' }} />
-  </IconButton>
+    Adicionar
+  </Button>
 );
 
 export default AddButton;

@@ -135,7 +135,7 @@ export default function Login() {
               </Button>
               <Divider sx={{ paddingY: 0 }}>
                 <Typography variant="body2" color="textSecondary">
-                  Ou continue com
+                  ou continue com
                 </Typography>
               </Divider>
               <div

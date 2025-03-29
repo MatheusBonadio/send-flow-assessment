@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
 import ContactModal from './ContactModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import ContactTableHeader from './ContactTableHeader';
 import ContactTableActions from './ContactTableActions';
 import { useContacts } from '@/presentation/hooks/useContacts';
 import { Contact } from '@/core/entities/contact';
+import AddButton from '@/presentation/components/ui/AddButton';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -56,8 +56,11 @@ const ContactTable: React.FC = () => {
 
   return (
     <>
-      <ContactTableHeader onAddContact={handleOpenCreateModal} />
-      <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
+      <div className="flex w-full flex-col justify-between gap-4 p-4 text-black">
+        <div>
+          <AddButton onClick={handleOpenCreateModal} />
+        </div>
+
         <CustomTable columns={columns} data={data} loading={loading} />
 
         <ContactModal

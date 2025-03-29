@@ -8,6 +8,7 @@ import { toUser } from '@/shared/user';
 import { AlertProvider } from '@/presentation/providers/AlertProvider';
 import { SnackbarProviders } from '@/presentation/providers/AlertProvider';
 import { GeistSans } from 'geist/font/sans';
+import { MenuProvider } from '@/presentation/contexts/MenuContext';
 
 export default async function RootLayout({
   children,
@@ -23,12 +24,14 @@ export default async function RootLayout({
   return (
     <html lang="pt-br" className={GeistSans.className}>
       <head />
-      <body className={`antialiased`}>
-        <SnackbarProviders>
-          <AlertProvider>
-            <AuthProvider user={user}>{children}</AuthProvider>
-          </AlertProvider>
-        </SnackbarProviders>
+      <body className="antialiased">
+        <MenuProvider>
+          <SnackbarProviders>
+            <AlertProvider>
+              <AuthProvider user={user}>{children}</AuthProvider>
+            </AlertProvider>
+          </SnackbarProviders>
+        </MenuProvider>
       </body>
     </html>
   );

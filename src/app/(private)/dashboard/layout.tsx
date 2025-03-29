@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { Menu } from '@/presentation/components/layout/Menu';
-import { Body } from '@/presentation/components/layout/Body';
 
 export default function RootLayout({
   children,
@@ -10,7 +9,7 @@ export default function RootLayout({
   return (
     <div>
       <Menu />
-      <Body title={'teste'}>{children}</Body>
+      {children}
     </div>
   );
 }

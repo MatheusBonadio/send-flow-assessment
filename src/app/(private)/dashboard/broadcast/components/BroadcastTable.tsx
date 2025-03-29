@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
 import BroadcastModal from './BroadcastModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import BroadcastTableHeader from './BroadcastTableHeader';
 import BroadcastTableActions from './BroadcastTableActions';
 import { useBroadcasts } from '@/presentation/hooks/useBroadcasts';
 import { useConnections } from '@/presentation/hooks/useConnections';
 import { useContacts } from '@/presentation/hooks/useContacts';
+import AddButton from '@/presentation/components/ui/AddButton';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -46,7 +46,6 @@ const BroadcastTable: React.FC = () => {
     contactsIDs: broadcast.contactsIDs.length,
     actions: (
       <BroadcastTableActions
-        onEdit={() => {}}
         onDelete={() => {
           setSelectedBroadcast(broadcast);
           setOpenDialog(true);
@@ -57,8 +56,11 @@ const BroadcastTable: React.FC = () => {
 
   return (
     <>
-      <BroadcastTableHeader onAddBroadcast={handleOpenCreateModal} />
-      <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
+      <div className="flex w-full flex-col justify-between gap-4 p-4 text-black">
+        <div>
+          <AddButton onClick={handleOpenCreateModal} />
+        </div>
+
         <CustomTable columns={columns} data={data} loading={loading} />
 
         <BroadcastModal

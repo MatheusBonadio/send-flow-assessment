@@ -2,7 +2,6 @@
 
 import React from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
-import MessageTableHeader from './MessageTableHeader';
 import { useMessages } from '@/presentation/hooks/useMessages';
 import { Chip } from '@mui/material';
 import StatusFilter from '@/presentation/components/ui/StatusFilter';
@@ -61,7 +60,6 @@ const MessageTable: React.FC = () => {
 
   return (
     <>
-      <MessageTableHeader />
       <div className="flex w-full flex-col gap-4 p-4 text-black">
         <StatusFilter
           statusFilter={statusFilter}

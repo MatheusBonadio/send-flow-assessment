@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
 import ConnectionModal from './ConnectionModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import ConnectionTableHeader from './ConnectionTableHeader';
 import ConnectionTableActions from './ConnectionTableActions';
 import { useConnections } from '@/presentation/hooks/useConnections';
 import { Connection } from '@/core/entities/connection';
+import AddButton from '@/presentation/components/ui/AddButton';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -54,8 +54,11 @@ const ConnectionTable: React.FC = () => {
 
   return (
     <>
-      <ConnectionTableHeader onAddConnection={handleOpenCreateModal} />
-      <div className="flex w-full flex-col items-center justify-between gap-4 p-4 text-black">
+      <div className="flex w-full flex-col justify-between gap-4 p-4 text-black">
+        <div>
+          <AddButton onClick={handleOpenCreateModal} />
+        </div>
+
         <CustomTable columns={columns} data={data} loading={loading} />
 
         <ConnectionModal
