@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { useUsers } from '@/presentation/hooks/useUser';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { addUser } = useUsers();
+  const router = useRouter();
 
   const auth = getAuth(app);
 
@@ -50,7 +52,8 @@ export default function Login() {
         },
       });
 
-      window.location.href = '/dashboard';
+      router.push('/dashboard');
+      router.refresh();
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -79,7 +82,8 @@ export default function Login() {
         },
       });
 
-      window.location.href = '/dashboard';
+      router.push('/dashboard');
+      router.refresh();
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -131,7 +135,7 @@ export default function Login() {
               </Button>
               <Divider sx={{ paddingY: 0 }}>
                 <Typography variant="body2" color="textSecondary">
-                  Ou continue com
+                  ou continue com
                 </Typography>
               </Divider>
               <div

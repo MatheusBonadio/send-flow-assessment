@@ -31,7 +31,7 @@ export default function LoginPage() {
         <Link href="#" underline="hover" sx={{ color: '#288d70' }}>
           Termos de Serviço
         </Link>{' '}
-        e de{' '}
+        e{' '}
         <Link href="#" underline="hover" sx={{ color: '#288d70' }}>
           Política de Privacidade
         </Link>
