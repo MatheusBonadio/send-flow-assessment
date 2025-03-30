@@ -65,12 +65,17 @@ O projeto estará disponível em [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📜 Scripts Disponíveis
+### 5. Executando com Docker
 
-- `npm run dev`: Inicia o servidor de desenvolvimento.
-- `npm run build`: Gera a build de produção.
-- `npm run start`: Inicia o servidor em modo de produção.
-- `npm run lint`: Executa o linter para verificar problemas no código.
+Caso prefira utilizar Docker para rodar o projeto, siga os passos abaixo:
+
+```bash
+docker build -t send-flow-assessment .
+
+docker run -p 3000:3000 send-flow-assessment
+```
+
+O projeto estará disponível em [http://localhost:3000](http://localhost:3000).
 
 ---
 
