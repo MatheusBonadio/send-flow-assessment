@@ -5,6 +5,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
 import { app } from '@/infrastructure/firebase/auth';
@@ -19,7 +20,7 @@ import {
   Divider,
   colors,
 } from '@mui/material';
-import { Google } from '@mui/icons-material';
+import { GitHub, Google } from '@mui/icons-material';
 import { useUsers } from '@/presentation/hooks/useUser';
 import { useRouter } from 'next/navigation';
 
@@ -90,6 +91,36 @@ export default function Login() {
     }
   }
 
+  async function handleGithubLogin() {
+    setError('');
+    setLoading(true);
+
+    try {
+      const provider = new GithubAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+      const user = result.user;
+
+      const isFirstLogin =
+        user.metadata.creationTime === user.metadata.lastSignInTime;
+
+      if (isFirstLogin)
+        await addUser({ id: user.uid, email: user.email ?? '' });
+
+      await fetch('/api/login', {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      router.push('/dashboard');
+      router.refresh();
+    } catch (e) {
+      setLoading(false);
+      setError((e as Error).message);
+    }
+  }
+
   return (
     <Card
       sx={{
@@ -104,7 +135,7 @@ export default function Login() {
               Bem-vindo de volta
             </h1>
             <p className="mt-1 text-sm text-gray-600">
-              Entre com a sua conta do Google
+              Entre com a sua conta do Google ou Github
             </p>
           </div>
           <form
@@ -119,20 +150,40 @@ export default function Login() {
                 gap: '16px',
               }}
             >
-              <Button
-                variant="outlined"
-                fullWidth
-                startIcon={<Google />}
-                onClick={handleGoogleLogin}
-                sx={{
-                  textTransform: 'initial',
-                  color: colors.grey[800],
-                  borderColor: colors.grey[600],
-                  ':hover': { backgroundColor: colors.grey[100] },
-                }}
-              >
-                Entrar com Google
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<Google />}
+                  onClick={handleGoogleLogin}
+                  sx={{
+                    textTransform: 'initial',
+                    color: colors.grey[800],
+                    borderColor: colors.grey[600],
+                    ':hover': { backgroundColor: colors.grey[100] },
+                  }}
+                >
+                  <Typography fontSize={14} fontWeight={500}>
+                    Entrar com Google
+                  </Typography>
+                </Button>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<GitHub />}
+                  onClick={handleGithubLogin}
+                  sx={{
+                    textTransform: 'initial',
+                    color: colors.grey[800],
+                    borderColor: colors.grey[600],
+                    ':hover': { backgroundColor: colors.grey[100] },
+                  }}
+                >
+                  <Typography fontSize={14} fontWeight={500}>
+                    Entrar com Github
+                  </Typography>
+                </Button>
+              </div>
               <Divider sx={{ paddingY: 0 }}>
                 <Typography variant="body2" color="textSecondary">
                   ou continue com
