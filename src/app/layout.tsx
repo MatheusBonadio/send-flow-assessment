@@ -1,26 +1,16 @@
+import React from 'react';
 import './globals.css';
-import { Metadata } from 'next';
-import { getTokens } from 'next-firebase-auth-edge';
-import { cookies, headers } from 'next/headers';
-import { authConfig } from '@/infrastructure/config/serverConfig';
+import { GeistSans } from 'geist/font/sans';
 import { AuthProvider } from '@/presentation/providers/AuthProvider';
-import { toUser } from '@/shared/user';
 import { AlertProvider } from '@/presentation/providers/AlertProvider';
 import { SnackbarProviders } from '@/presentation/providers/AlertProvider';
-import { GeistSans } from 'geist/font/sans';
 import { MenuProvider } from '@/presentation/contexts/MenuContext';
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const tokens = await getTokens(await cookies(), {
-    ...authConfig,
-    headers: await headers(),
-  });
-  const user = tokens ? toUser(tokens) : null;
-
   return (
     <html lang="pt-br" className={GeistSans.className}>
       <head />
@@ -28,7 +18,7 @@ export default async function RootLayout({
         <MenuProvider>
           <SnackbarProviders>
             <AlertProvider>
-              <AuthProvider user={user}>{children}</AuthProvider>
+              <AuthProvider>{children}</AuthProvider>
             </AlertProvider>
           </SnackbarProviders>
         </MenuProvider>
@@ -36,7 +26,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
-export const metadata: Metadata = {
-  title: 'UnniChat',
-};
