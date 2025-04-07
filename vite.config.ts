@@ -4,11 +4,5 @@ import tailwindcss from '@tailwindcss/vite';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), viteTsconfigPaths()],
-  server: {
-    open: true,
-  },
-  build: {
-    outDir: 'build',
-  },
+  plugins: [react(), tailwindcss(), viteTsconfigPaths()]
 });
