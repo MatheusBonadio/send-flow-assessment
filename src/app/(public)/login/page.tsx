@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { Typography, Link } from '@mui/material';
 import Login from '@/presentation/components/layout/Login';
 
