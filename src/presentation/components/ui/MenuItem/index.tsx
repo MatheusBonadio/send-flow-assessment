@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

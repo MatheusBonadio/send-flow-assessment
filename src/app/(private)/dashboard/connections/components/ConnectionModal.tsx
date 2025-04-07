@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useCallback } from 'react';
 import { Connection } from '@/core/entities/connection';
 import { CustomModal } from '@/presentation/components/ui';

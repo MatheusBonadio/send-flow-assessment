@@ -1,5 +1,3 @@
-'use client';
-
 import CustomCard from '@/presentation/components/ui/Card';
 import {
   AccessAlarmOutlined,

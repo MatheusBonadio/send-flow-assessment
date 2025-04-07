@@ -1,5 +1,3 @@
-'use client';
-
 import { FormEvent, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '@/infrastructure/firebase/auth';

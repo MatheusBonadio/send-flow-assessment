@@ -1,5 +1,3 @@
-'use client';
-
 import { MenuOpenOutlined, Menu } from '@mui/icons-material'; // Importando o ícone Menu
 import { IconButton } from '@mui/material';
 import { useMenu } from '@/presentation/contexts/MenuContext';

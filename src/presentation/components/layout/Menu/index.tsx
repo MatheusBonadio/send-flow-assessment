@@ -1,5 +1,3 @@
-'use client';
-
 import CustomMenuItem from '@/presentation/components/ui/MenuItem';
 import {
   ContactsOutlined,

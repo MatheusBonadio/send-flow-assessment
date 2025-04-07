@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
 import BroadcastModal from './BroadcastModal';

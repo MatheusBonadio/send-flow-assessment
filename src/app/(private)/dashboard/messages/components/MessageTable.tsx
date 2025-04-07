@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
 import { useMessages } from '@/presentation/hooks/useMessages';
