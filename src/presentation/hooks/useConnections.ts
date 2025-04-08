@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/presentation/contexts/AuthContext';
+import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
 import { ConnectionRepository } from '@/infrastructure/repositories/connectionRepository';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
 import { Connection } from '@/core/entities/connection';
 import { ConnectionUseCases } from '@/core/useCases/connectionUseCase';
 
 export const useConnections = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedConnection, setSelectedConnection] = useState<Connection | undefined>(undefined);
+  const [selectedConnection, setSelectedConnection] = useState<
+    Connection | undefined
+  >(undefined);
   const [connectionCount, setConnectionCount] = useState<number | null>(null);
   const { user } = useAuth();
 
   const { showAlert } = useAlert();
-  
-  if (!user?.uid) 
-    throw new Error('ID de usuário não encontrado!');
+
+  if (!user?.uid) throw new Error('ID de usuário não encontrado!');
 
   const firestore = new FirebaseFirestore();
   const connectionRepository = new ConnectionRepository(firestore, user.uid);
@@ -36,7 +37,7 @@ export const useConnections = () => {
     const unsubscribe = connectionUseCases.getCount((count) => {
       setConnectionCount(count);
     });
-    
+
     return () => unsubscribe;
   }, []);
 
@@ -46,7 +47,7 @@ export const useConnections = () => {
       const newConnection = await connectionUseCases.create({
         ...connectionData,
       } as Connection);
-      
+
       showAlert('Conexão adicionada com sucesso!', 'success');
       return newConnection;
     } catch (error: unknown) {
@@ -79,10 +80,16 @@ export const useConnections = () => {
     }
   };
 
-  const updateConnection = async (id: string, connectionData: Partial<Connection>) => {
+  const updateConnection = async (
+    id: string,
+    connectionData: Partial<Connection>,
+  ) => {
     try {
       setLoading(true);
-      const updatedConnection = await connectionUseCases.update(id, connectionData as Connection);
+      const updatedConnection = await connectionUseCases.update(
+        id,
+        connectionData as Connection,
+      );
       showAlert('Conexão atualizada com sucesso!', 'success');
       return updatedConnection;
     } catch (error: unknown) {

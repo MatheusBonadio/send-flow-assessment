@@ -8,16 +8,15 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/auth';
+import { app } from '@/lib/firebase';
 import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { useAuth } from '@/presentation/contexts/AuthContext';
+import { useAuth } from '@/presentation/hooks/useAuth';
 import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useMenu } from '@/presentation/contexts/MenuContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MenuTitle = ({ isMenuOpen }: { isMenuOpen: boolean }) => (
-  <Link href="/" className={`${isMenuOpen ? 'px-4' : 'px-2'}`}>
+  <Link to="/" className={`${isMenuOpen ? 'px-4' : 'px-2'}`}>
     <span
       className={`text-${isMenuOpen ? 'xl' : 'xs'} font-bold`}
       style={{ transition: 'font-size 0.3s' }}
@@ -118,14 +117,13 @@ export function Menu() {
   const { user } = useAuth();
   const { isMenuOpen } = useMenu();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   async function handleLogout() {
     setIsLoggingOut(true);
     await signOut(getAuth(app));
     await fetch('/api/logout');
-    router.push('/login');
-    router.refresh();
+    navigate('/login');
   }
 
   return (

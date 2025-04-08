@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/presentation/contexts/AuthContext';
+import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
 import { MessageRepository } from '@/infrastructure/repositories/messageRepository';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
 import { Message } from '@/core/entities/message';
 import { MessageUseCases } from '@/core/useCases/messageUseCase';
 
@@ -10,14 +10,15 @@ export const useMessages = () => {
   const [messagesScheduled, setMessagesScheduled] = useState<Message[]>([]);
   const [messagesSent, setMessagesSent] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [messageCountScheduled, setMessageCountScheduled] = useState<number | null>(null);
+  const [messageCountScheduled, setMessageCountScheduled] = useState<
+    number | null
+  >(null);
   const [messageCountSent, setMessageCountSent] = useState<number | null>(null);
   const { user } = useAuth();
 
   const { showAlert } = useAlert();
-  
-  if (!user?.uid) 
-    throw new Error('ID de usuário não encontrado!');
+
+  if (!user?.uid) throw new Error('ID de usuário não encontrado!');
 
   const firestore = new FirebaseFirestore();
   const messageRepository = new MessageRepository(firestore, user.uid);
@@ -57,14 +58,14 @@ export const useMessages = () => {
 
     return () => unsubscribe;
   }, []);
-  
+
   const addMessage = async (messageData: Omit<Message, 'id'>) => {
     try {
       setLoading(true);
       const newMessage = await messageUseCases.create({
         ...messageData,
       } as Message);
-      
+
       showAlert('Mensagem adicionada com sucesso!', 'success');
       return newMessage;
     } catch (error: unknown) {

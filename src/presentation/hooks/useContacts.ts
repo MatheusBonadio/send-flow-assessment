@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/presentation/contexts/AuthContext';
+import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
 import { ContactRepository } from '@/infrastructure/repositories/contactRepository';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
 import { Contact } from '@/core/entities/contact';
 import { ContactUseCases } from '@/core/useCases/contactUseCase';
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedContact, setSelectedContact] = useState<Contact | undefined>(undefined);
+  const [selectedContact, setSelectedContact] = useState<Contact | undefined>(
+    undefined,
+  );
   const [contactCount, setContactCount] = useState<number | null>(null);
   const { user } = useAuth();
 
   const { showAlert } = useAlert();
-  
-  if (!user?.uid) 
-    throw new Error('ID de usuário não encontrado!');
+
+  if (!user?.uid) throw new Error('ID de usuário não encontrado!');
 
   const firestore = new FirebaseFirestore();
   const contactRepository = new ContactRepository(firestore, user.uid);
@@ -36,7 +37,7 @@ export const useContacts = () => {
     const unsubscribe = contactUseCases.getCount((count) => {
       setContactCount(count);
     });
-    
+
     return () => unsubscribe;
   }, []);
 
@@ -46,7 +47,7 @@ export const useContacts = () => {
       const newContact = await contactUseCases.create({
         ...contactData,
       } as Contact);
-      
+
       showAlert('Contato adicionado com sucesso!', 'success');
       return newContact;
     } catch (error: unknown) {
@@ -82,7 +83,10 @@ export const useContacts = () => {
   const updateContact = async (id: string, contactData: Partial<Contact>) => {
     try {
       setLoading(true);
-      const updatedContact = await contactUseCases.update(id, contactData as Contact);
+      const updatedContact = await contactUseCases.update(
+        id,
+        contactData as Contact,
+      );
       showAlert('Contato atualizado com sucesso!', 'success');
       return updatedContact;
     } catch (error: unknown) {

@@ -1,18 +1,10 @@
-import { createContext, useContext } from 'react';
-import { UserInfo } from 'firebase/auth';
+import type { User } from 'firebase/auth';
+import { createContext } from 'react';
 
-export interface User extends UserInfo {
-    idToken: string;
-    customToken?: string;
-    emailVerified: boolean;
+export interface AuthContext {
+  user: User | null;
+  logout: () => Promise<void>;
+  loading: boolean;
 }
 
-export interface AuthContextValue {
-    user: User | null;
-}
-
-export const AuthContext = createContext<AuthContextValue>({
-    user: null
-});
-
-export const useAuth = () => useContext(AuthContext);
+export const AuthContext = createContext<AuthContext>({} as AuthContext);

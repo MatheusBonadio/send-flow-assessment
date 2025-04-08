@@ -1,6 +1,6 @@
 import { useAlert } from '@/presentation/providers/AlertProvider';
 import { UserRepository } from '@/infrastructure/repositories/userRepository';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
 import { User } from '@/core/entities/user';
 import { UserUseCases } from '@/core/useCases/userUseCase';
 
@@ -16,15 +16,15 @@ export const useUsers = () => {
       const newUser = await userUseCases.create({
         ...userData,
       } as User);
-      
+
       showAlert('Usuário criado com sucesso!', 'success');
       return newUser;
     } catch (error: unknown) {
       showAlert(String(error), 'error');
-    } 
+    }
   };
 
   return {
-    addUser
+    addUser,
   };
 };
