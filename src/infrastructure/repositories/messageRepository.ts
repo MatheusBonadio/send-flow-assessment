@@ -1,7 +1,16 @@
 import { IMessageRepository } from '@/core/repositories/IMessageRepository';
 import { Message } from '@/core/entities/message';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
-import { onSnapshot, collection, doc, addDoc, getDoc, query, orderBy, where } from 'firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
+import {
+  onSnapshot,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  query,
+  orderBy,
+  where,
+} from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { ContactRepository } from './contactRepository';
 
@@ -21,7 +30,7 @@ export class MessageRepository implements IMessageRepository {
 
   async create(message: Message): Promise<Message> {
     const messagesCol = await this.messagesCollection();
-    
+
     const docRef = await addDoc(messagesCol, {
       id: uuidv4(),
       body: message.body,
@@ -40,7 +49,7 @@ export class MessageRepository implements IMessageRepository {
       message.broadcastID,
       message.broadcastName,
       'scheduled',
-      message.scheduledAt
+      message.scheduledAt,
     );
   }
 
@@ -49,7 +58,7 @@ export class MessageRepository implements IMessageRepository {
     const docSnapshot = await getDoc(doc(messagesCol, id));
 
     if (!docSnapshot.exists()) return null;
-    
+
     const data = docSnapshot.data();
     return new Message(
       id,
@@ -59,21 +68,28 @@ export class MessageRepository implements IMessageRepository {
       data.broadcastName,
       data.status,
       data.scheduledAt.toDate(),
-      data.contactName
+      data.contactName,
     );
   }
 
   getAllScheduled(onDataChanged: (messages: Message[]) => void): void {
     this.messagesCollection().then((messagesCol) => {
-      const queryScheduled = query(messagesCol, orderBy('scheduledAt', 'desc'), where('status', '==', 'scheduled'));
+      const queryScheduled = query(
+        messagesCol,
+        orderBy('scheduledAt', 'desc'),
+        where('status', '==', 'scheduled'),
+      );
       const unsubscribe = onSnapshot(
         queryScheduled,
         async (snapshot) => {
           const messages = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              
-              const contactRepository = new ContactRepository(this.firestore, this.userId);
+
+              const contactRepository = new ContactRepository(
+                this.firestore,
+                this.userId,
+              );
               const contact = await contactRepository.getById(data.contactID);
               const contactName = contact ? contact.name : '';
 
@@ -85,16 +101,16 @@ export class MessageRepository implements IMessageRepository {
                 data.broadcastName,
                 data.status,
                 data.scheduledAt.toDate(),
-                contactName
+                contactName,
               );
-            })
+            }),
           );
 
           onDataChanged(messages);
         },
         (error) => {
-          throw new Error('Erro ao buscar mensagens: ', error);
-        }
+          throw new Error('Erro ao buscar mensagens: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -103,15 +119,22 @@ export class MessageRepository implements IMessageRepository {
 
   getAllSent(onDataChanged: (messages: Message[]) => void): void {
     this.messagesCollection().then((messagesCol) => {
-      const querySent = query(messagesCol, orderBy('scheduledAt', 'desc'), where('status', '==', 'sent'));
+      const querySent = query(
+        messagesCol,
+        orderBy('scheduledAt', 'desc'),
+        where('status', '==', 'sent'),
+      );
       const unsubscribe = onSnapshot(
         querySent,
         async (snapshot) => {
           const messages = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              
-              const contactRepository = new ContactRepository(this.firestore, this.userId);
+
+              const contactRepository = new ContactRepository(
+                this.firestore,
+                this.userId,
+              );
               const contact = await contactRepository.getById(data.contactID);
               const contactName = contact ? contact.name : '';
 
@@ -123,16 +146,16 @@ export class MessageRepository implements IMessageRepository {
                 data.broadcastName,
                 data.status,
                 data.scheduledAt.toDate(),
-                contactName
+                contactName,
               );
-            })
+            }),
           );
 
           onDataChanged(messages);
         },
         (error) => {
-          throw new Error('Erro ao buscar mensagens: ', error);
-        }
+          throw new Error('Erro ao buscar mensagens: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -141,7 +164,10 @@ export class MessageRepository implements IMessageRepository {
 
   getCountScheduled(onCountChanged: (count: number) => void): void {
     this.messagesCollection().then((messagesCol) => {
-      const queryScheduled = query(messagesCol, where('status', '==', 'scheduled'));
+      const queryScheduled = query(
+        messagesCol,
+        where('status', '==', 'scheduled'),
+      );
       const unsubscribe = onSnapshot(
         queryScheduled,
         (snapshot) => {
@@ -149,8 +175,8 @@ export class MessageRepository implements IMessageRepository {
         },
         (error) => {
           onCountChanged(0);
-          throw new Error('Erro ao contar mensagens: ', error);
-        }
+          throw new Error('Erro ao contar mensagens: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -167,8 +193,8 @@ export class MessageRepository implements IMessageRepository {
         },
         (error) => {
           onCountChanged(0);
-          throw new Error('Erro ao contar mensagens: ', error);
-        }
+          throw new Error('Erro ao contar mensagens: ' + error);
+        },
       );
 
       return unsubscribe;

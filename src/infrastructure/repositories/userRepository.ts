@@ -1,6 +1,6 @@
 import { IUserRepository } from '@/core/repositories/IUserRepository';
 import { User } from '@/core/entities/user';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
+import { FirebaseFirestore } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 export class UserRepository implements IUserRepository {

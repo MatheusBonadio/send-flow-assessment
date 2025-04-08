@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { Menu } from '@/presentation/components/layout/Menu';
 
 export default function RootLayout({
@@ -13,7 +12,3 @@ export default function RootLayout({
     </div>
   );
 }
-
-export const metadata: Metadata = {
-  title: 'UnniChat Dashboard',
-};

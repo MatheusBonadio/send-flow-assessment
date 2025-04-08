@@ -40,6 +40,7 @@ const MenuSectionTitle = ({
   </div>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MenuProfile = ({ user, isMenuOpen, handleLogout, isLoggingOut }: any) => (
   <div className="flex flex-col gap-1 p-2">
     <MenuSectionTitle isMenuOpen={isMenuOpen} title="Perfil" />

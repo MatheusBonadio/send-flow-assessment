@@ -1,8 +1,18 @@
-import { IConnectionRepository } from "@/core/repositories/IConnectionRepository";
-import { Connection } from "@/core/entities/connection";
-import { FirebaseFirestore } from "@/infrastructure/firebase/firestore";
-import { onSnapshot, collection, doc, addDoc, getDoc, updateDoc, deleteDoc, query, orderBy } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
+import { IConnectionRepository } from '@/core/repositories/IConnectionRepository';
+import { Connection } from '@/core/entities/connection';
+import { FirebaseFirestore } from '@/lib/firebase';
+import {
+  onSnapshot,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+} from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ConnectionRepository implements IConnectionRepository {
   private userId: string;
@@ -20,7 +30,7 @@ export class ConnectionRepository implements IConnectionRepository {
 
   async create(connection: Connection): Promise<Connection> {
     const connectionsCol = await this.connectionsCollection();
-    
+
     const docRef = await addDoc(connectionsCol, {
       id: uuidv4(),
       name: connection.name,
@@ -36,14 +46,14 @@ export class ConnectionRepository implements IConnectionRepository {
     const docSnapshot = await getDoc(doc(connectionsCol, id));
 
     if (!docSnapshot.exists()) return null;
-    
+
     const data = docSnapshot.data();
-    return new Connection(id, data?.name || "");
+    return new Connection(id, data?.name || '');
   }
 
   getAll(onDataChanged: (connections: Connection[]) => void): void {
     this.connectionsCollection().then((connectionsCol) => {
-      const queryWithOrder = query(connectionsCol, orderBy("createdAt", "asc"));
+      const queryWithOrder = query(connectionsCol, orderBy('createdAt', 'asc'));
       const unsubscribe = onSnapshot(
         queryWithOrder,
         (snapshot) => {
@@ -54,8 +64,8 @@ export class ConnectionRepository implements IConnectionRepository {
           onDataChanged(connections);
         },
         (error) => {
-          throw new Error("Erro ao buscar conexões: ", error);
-        }
+          throw new Error('Erro ao buscar conexões: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -86,8 +96,8 @@ export class ConnectionRepository implements IConnectionRepository {
         },
         (error) => {
           onCountChanged(0);
-          throw new Error("Erro ao contar conexões: ", error);
-        }
+          throw new Error('Erro ao contar conexões: ' + error);
+        },
       );
 
       return unsubscribe;

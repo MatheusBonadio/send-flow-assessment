@@ -1,8 +1,18 @@
-import { IContactRepository } from "@/core/repositories/IContactRepository";
-import { Contact } from "@/core/entities/contact";
-import { FirebaseFirestore } from "@/infrastructure/firebase/firestore";
-import { onSnapshot, collection, doc, addDoc, getDoc, updateDoc, deleteDoc, query, orderBy } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
+import { IContactRepository } from '@/core/repositories/IContactRepository';
+import { Contact } from '@/core/entities/contact';
+import { FirebaseFirestore } from '@/lib/firebase';
+import {
+  onSnapshot,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+} from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ContactRepository implements IContactRepository {
   private userId: string;
@@ -20,7 +30,7 @@ export class ContactRepository implements IContactRepository {
 
   async create(contact: Contact): Promise<Contact> {
     const contactsCol = await this.contactsCollection();
-    
+
     const docRef = await addDoc(contactsCol, {
       id: uuidv4(),
       name: contact.name,
@@ -37,14 +47,14 @@ export class ContactRepository implements IContactRepository {
     const docSnapshot = await getDoc(doc(contactsCol, id));
 
     if (!docSnapshot.exists()) return null;
-    
+
     const data = docSnapshot.data();
-    return new Contact(id, data?.name || "", data?.phone || "");
+    return new Contact(id, data?.name || '', data?.phone || '');
   }
 
   getAll(onDataChanged: (contacts: Contact[]) => void): void {
     this.contactsCollection().then((contactsCol) => {
-      const queryWithOrder = query(contactsCol, orderBy("createdAt", "asc"));
+      const queryWithOrder = query(contactsCol, orderBy('createdAt', 'asc'));
       const unsubscribe = onSnapshot(
         queryWithOrder,
         (snapshot) => {
@@ -55,8 +65,8 @@ export class ContactRepository implements IContactRepository {
           onDataChanged(contacts);
         },
         (error) => {
-          throw new Error("Erro ao buscar contatos: ", error);
-        }
+          throw new Error('Erro ao buscar contatos: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -88,8 +98,8 @@ export class ContactRepository implements IContactRepository {
         },
         (error) => {
           onCountChanged(0);
-          throw new Error("Erro ao contar contatos: ", error);
-        }
+          throw new Error('Erro ao contar contatos: ' + error);
+        },
       );
 
       return unsubscribe;

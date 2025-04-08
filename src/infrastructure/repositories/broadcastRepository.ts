@@ -1,10 +1,19 @@
-import { IBroadcastRepository } from "@/core/repositories/IBroadcastRepository";
-import { ConnectionRepository } from "@/infrastructure/repositories/connectionRepository";
-import { Broadcast } from "@/core/entities/broadcast";
-import { FirebaseFirestore } from "@/infrastructure/firebase/firestore";
-import { onSnapshot, collection, doc, addDoc, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
-import { MessageRepository } from "./messageRepository";
+import { IBroadcastRepository } from '@/core/repositories/IBroadcastRepository';
+import { ConnectionRepository } from '@/infrastructure/repositories/connectionRepository';
+import { Broadcast } from '@/core/entities/broadcast';
+import { FirebaseFirestore } from '@/lib/firebase';
+import {
+  onSnapshot,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  deleteDoc,
+  query,
+  orderBy,
+} from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
+import { MessageRepository } from './messageRepository';
 
 export class BroadcastRepository implements IBroadcastRepository {
   private userId: string;
@@ -22,7 +31,7 @@ export class BroadcastRepository implements IBroadcastRepository {
 
   async create(broadcast: Broadcast): Promise<Broadcast> {
     const broadcastsCol = await this.broadcastsCollection();
-    
+
     const docRef = await addDoc(broadcastsCol, {
       id: uuidv4(),
       name: broadcast.name,
@@ -33,7 +42,10 @@ export class BroadcastRepository implements IBroadcastRepository {
       createdAt: new Date(),
     });
 
-    const messageRepository = new MessageRepository(this.firestore, this.userId);
+    const messageRepository = new MessageRepository(
+      this.firestore,
+      this.userId,
+    );
 
     for (const contactId of broadcast.contactsIDs) {
       await messageRepository.create({
@@ -44,11 +56,18 @@ export class BroadcastRepository implements IBroadcastRepository {
         broadcastID: docRef.id,
         broadcastName: broadcast.name,
         status: 'scheduled',
-        scheduledAt: broadcast.scheduledAt
+        scheduledAt: broadcast.scheduledAt,
       });
     }
 
-    return new Broadcast(docRef.id, broadcast.name, broadcast.scheduledAt, broadcast.body, broadcast.connectionID, broadcast.contactsIDs);
+    return new Broadcast(
+      docRef.id,
+      broadcast.name,
+      broadcast.scheduledAt,
+      broadcast.body,
+      broadcast.connectionID,
+      broadcast.contactsIDs,
+    );
   }
 
   async getById(id: string): Promise<Broadcast | null> {
@@ -56,23 +75,35 @@ export class BroadcastRepository implements IBroadcastRepository {
     const docSnapshot = await getDoc(doc(broadcastsCol, id));
 
     if (!docSnapshot.exists()) return null;
-    
+
     const data = docSnapshot.data();
-    return new Broadcast(id, data.name, data.scheduledAt, data.body, data.connectionID, data.contactsIDs);
+    return new Broadcast(
+      id,
+      data.name,
+      data.scheduledAt,
+      data.body,
+      data.connectionID,
+      data.contactsIDs,
+    );
   }
 
   getAll(onDataChanged: (broadcasts: Broadcast[]) => void): void {
     this.broadcastsCollection().then((broadcastsCol) => {
-      const queryWithOrder = query(broadcastsCol, orderBy("createdAt", "asc"));
+      const queryWithOrder = query(broadcastsCol, orderBy('createdAt', 'asc'));
       const unsubscribe = onSnapshot(
         queryWithOrder,
         async (snapshot) => {
           const broadcasts = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              
-              const connectionRepository = new ConnectionRepository(this.firestore, this.userId);
-              const connection = await connectionRepository.getById(data.connectionID);
+
+              const connectionRepository = new ConnectionRepository(
+                this.firestore,
+                this.userId,
+              );
+              const connection = await connectionRepository.getById(
+                data.connectionID,
+              );
               const connectionName = connection ? connection.name : '';
 
               return new Broadcast(
@@ -82,16 +113,16 @@ export class BroadcastRepository implements IBroadcastRepository {
                 data.body,
                 data.connectionID,
                 data.contactsIDs,
-                connectionName
+                connectionName,
               );
-            })
+            }),
           );
 
           onDataChanged(broadcasts);
         },
         (error) => {
-          throw new Error("Erro ao buscar transmissões: ", error);
-        }
+          throw new Error('Erro ao buscar transmissões: ' + error);
+        },
       );
 
       return unsubscribe;
@@ -113,8 +144,8 @@ export class BroadcastRepository implements IBroadcastRepository {
         },
         (error) => {
           onCountChanged(0);
-          throw new Error("Erro ao contar transmissões: ", error);
-        }
+          throw new Error('Erro ao contar transmissões: ' + error);
+        },
       );
 
       return unsubscribe;

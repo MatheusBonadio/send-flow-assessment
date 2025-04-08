@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { colors } from '@mui/material';
 
 import Button, { ButtonProps } from '@mui/material/Button';
