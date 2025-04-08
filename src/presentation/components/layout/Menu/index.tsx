@@ -123,7 +123,6 @@ export function Menu() {
   async function handleLogout() {
     setIsLoggingOut(true);
     await signOut(getAuth(app));
-    await fetch('/api/logout');
     navigate('/login');
   }
 

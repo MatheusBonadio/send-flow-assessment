@@ -14,6 +14,7 @@ import BroadcastPage from '@/app/(private)/dashboard/broadcast/page';
 import MessagePage from '@/app/(private)/dashboard/messages/page';
 import { useAuth } from '@/presentation/hooks/useAuth';
 import { CircularProgress } from '@mui/material';
+import { Menu } from './presentation/components/layout/Menu';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -30,7 +31,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
           height: '100vh',
         }}
       >
-        <CircularProgress />
+        <CircularProgress style={{ color: '#1b5444' }} />
       </div>
     );
   }
@@ -49,6 +50,7 @@ const AppRoutes: React.FC = () => {
           path="/dashboard"
           element={
             <PrivateRoute>
+              <Menu />
               <DashboardPage />
             </PrivateRoute>
           }
@@ -57,6 +59,7 @@ const AppRoutes: React.FC = () => {
           path="/dashboard/contacts"
           element={
             <PrivateRoute>
+              <Menu />
               <ContactPage />
             </PrivateRoute>
           }
@@ -65,6 +68,7 @@ const AppRoutes: React.FC = () => {
           path="/dashboard/connections"
           element={
             <PrivateRoute>
+              <Menu />
               <ConnectionPage />
             </PrivateRoute>
           }
@@ -73,6 +77,7 @@ const AppRoutes: React.FC = () => {
           path="/dashboard/broadcast"
           element={
             <PrivateRoute>
+              <Menu />
               <BroadcastPage />
             </PrivateRoute>
           }
@@ -81,6 +86,7 @@ const AppRoutes: React.FC = () => {
           path="/dashboard/messages"
           element={
             <PrivateRoute>
+              <Menu />
               <MessagePage />
             </PrivateRoute>
           }

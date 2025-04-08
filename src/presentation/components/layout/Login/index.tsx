@@ -38,18 +38,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const credential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const idToken = await credential.user.getIdToken();
-
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+      await signInWithEmailAndPassword(auth, email, password);
 
       navigate('/dashboard');
     } catch (e) {
@@ -65,7 +54,6 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
       const user = result.user;
 
       const isFirstLogin =
@@ -73,12 +61,6 @@ export default function Login() {
 
       if (isFirstLogin)
         await addUser({ id: user.uid, email: user.email ?? '' });
-
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
 
       navigate('/dashboard');
     } catch (e) {
@@ -94,7 +76,6 @@ export default function Login() {
     try {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
       const user = result.user;
 
       const isFirstLogin =
@@ -102,12 +83,6 @@ export default function Login() {
 
       if (isFirstLogin)
         await addUser({ id: user.uid, email: user.email ?? '' });
-
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
 
       navigate('/dashboard');
     } catch (e) {
