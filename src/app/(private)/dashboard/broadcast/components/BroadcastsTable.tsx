@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
-import BroadcastModal from './BroadcastModal';
+import BroadcastModal from './BroadcastsModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import BroadcastTableActions from './BroadcastTableActions';
-import { useBroadcasts } from '@/presentation/hooks/useBroadcasts';
-import { useConnections } from '@/presentation/hooks/useConnections';
-import { useContacts } from '@/presentation/hooks/useContacts';
+import BroadcastTableActions from './BroadcastsTableActions';
 import AddButton from '@/presentation/components/ui/AddButton';
+import { useBroadcasts } from '../BroadcastsModel';
+import { useContacts } from '../../contacts/ContactsModel';
+import { useConnections } from '../../connections/ConnectionsModel';
 
 const columns = [
   { id: 'name', label: 'Nome' },

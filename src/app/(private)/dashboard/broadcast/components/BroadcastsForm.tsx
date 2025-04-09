@@ -3,8 +3,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
 import { CustomInput } from '@/presentation/components/ui';
-import { Contact } from '@/core/entities/contact';
-import { Connection } from '@/core/entities/connection';
+import { Contact } from '../../contacts/ContactsModel';
+import { Connection } from '../../connections/ConnectionsModel';
 
 const formSchema = z.object({
   id: z.string().optional(),

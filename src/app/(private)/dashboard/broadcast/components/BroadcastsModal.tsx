@@ -1,12 +1,11 @@
 import { useState, useCallback } from 'react';
-import { Broadcast } from '@/core/entities/broadcast';
 import { CustomModal } from '@/presentation/components/ui';
-import { useBroadcasts } from '@/presentation/hooks/useBroadcasts';
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { BroadcastForm } from './BroadcastForm';
-import { BroadcastModalActions } from './BroadcastModalActions';
-import { Connection } from '@/core/entities/connection';
-import { Contact } from '@/core/entities/contact';
+import { BroadcastForm } from './BroadcastsForm';
+import { BroadcastModalActions } from './BroadcastsModalActions';
+import { Broadcast, useBroadcasts } from '../BroadcastsModel';
+import { Contact } from '../../contacts/ContactsModel';
+import { Connection } from '../../connections/ConnectionsModel';
 
 type EditableBroadcastFields = Omit<Broadcast, 'id' | 'createdAt'> & {
   connectionName?: string;
