@@ -9,9 +9,8 @@ import {
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
 import { app } from '@/lib/firebase';
-import { Avatar, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { Avatar, IconButton, Tooltip } from '@mui/material'; // Removido CircularProgress
 import { useAuth } from '@/presentation/hooks/useAuth';
-import { useState } from 'react';
 import { useMenu } from '@/presentation/contexts/MenuContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -41,7 +40,7 @@ const MenuSectionTitle = ({
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const MenuProfile = ({ user, isMenuOpen, handleLogout, isLoggingOut }: any) => (
+const MenuProfile = ({ user, isMenuOpen, handleLogout }: any) => (
   <div className="flex flex-col gap-1 p-2">
     <MenuSectionTitle isMenuOpen={isMenuOpen} title="Perfil" />
     <div
@@ -66,12 +65,8 @@ const MenuProfile = ({ user, isMenuOpen, handleLogout, isLoggingOut }: any) => (
         </div>
       )}
       <div style={{ marginLeft: 'auto' }}>
-        <IconButton onClick={handleLogout} size="small" disabled={isLoggingOut}>
-          {isLoggingOut ? (
-            <CircularProgress size={16} style={{ color: '#1b5444' }} />
-          ) : (
-            <Logout style={{ fontSize: '16px' }} />
-          )}
+        <IconButton onClick={handleLogout} size="small">
+          <Logout style={{ fontSize: '16px' }} />
         </IconButton>
       </div>
     </div>
@@ -117,11 +112,9 @@ const MenuItems = ({ isMenuOpen }: { isMenuOpen: boolean }) => (
 export function Menu() {
   const { user } = useAuth();
   const { isMenuOpen } = useMenu();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   async function handleLogout() {
-    setIsLoggingOut(true);
     await signOut(getAuth(app));
     navigate('/login');
   }
@@ -138,7 +131,6 @@ export function Menu() {
         user={user}
         isMenuOpen={isMenuOpen}
         handleLogout={handleLogout}
-        isLoggingOut={isLoggingOut}
       />
     </menu>
   );

@@ -1,6 +1,6 @@
 # Send Flow Assessment
 
-Este é um projeto desenvolvido para gerenciar transmissões (broadcasts) utilizando Firebase como backend e React com Next.js no frontend. O sistema permite criar, editar, listar e excluir transmissões, além de integrar conexões e contatos armazenados no Firebase.
+Este é um projeto desenvolvido para gerenciar transmissões (broadcasts) utilizando Firebase como backend e React com Vite no frontend. O sistema permite criar, editar, listar e excluir transmissões, além de integrar conexões e contatos armazenados no Firebase.
 
 ---
 
@@ -11,6 +11,7 @@ Este é um projeto desenvolvido para gerenciar transmissões (broadcasts) utiliz
 - **Formulários**: [React Hook Form](https://react-hook-form.com/) com validação usando [Zod](https://zod.dev/)
 - **Backend**: [Firebase](https://firebase.google.com/)
 - **Notificações**: [Notistack](https://notistack.com/)
+- **Roteamento**: [React Router](https://reactrouter.com/)
 - **Gerenciamento de Estado**: Hooks do React
 
 ---
@@ -21,8 +22,8 @@ Este é um projeto desenvolvido para gerenciar transmissões (broadcasts) utiliz
 
 Certifique-se de ter instalado:
 
-- [Node.js](https://nodejs.org/) (versão 18 ou superior)
-- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- [Node.js](https://nodejs.org/) (versão 20 ou superior)
+- [pnpm](https://pnpm.io/) ou [yarn](https://yarnpkg.com/)
 
 ### 2. Instalação
 
@@ -31,7 +32,7 @@ Clone o repositório e instale as dependências:
 ```bash
 git clone https://github.com/seu-usuario/send-flow-assessment.git
 cd send-flow-assessment
-npm install
+pnpm install
 ```
 
 ### 3. Configuração do Firebase
@@ -47,9 +48,6 @@ VITE_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
 VITE_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
 VITE_PUBLIC_FIREBASE_APP_ID=your-app-id
 VITE_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
-
-FIREBASE_ADMIN_CLIENT_EMAIL=your-admin-client-email
-FIREBASE_ADMIN_PRIVATE_KEY=your-admin-private-key
 ```
 
 ### 4. Executando o Projeto
@@ -57,10 +55,10 @@ FIREBASE_ADMIN_PRIVATE_KEY=your-admin-private-key
 Para iniciar o servidor de desenvolvimento:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
-O projeto estará disponível em [http://localhost:3000](http://localhost:3000).
+O projeto estará disponível em [http://localhost:5173](http://localhost:5173).
 
 ---
 
@@ -71,10 +69,10 @@ Caso prefira utilizar Docker para rodar o projeto, siga os passos abaixo:
 ```bash
 docker build -t send-flow-assessment .
 
-docker run -p 3000:3000 send-flow-assessment
+docker run -p 4173:4173 send-flow-assessment
 ```
 
-O projeto estará disponível em [http://localhost:3000](http://localhost:3000).
+O projeto estará disponível em [http://localhost:4173](http://localhost:4173).
 
 ---
 

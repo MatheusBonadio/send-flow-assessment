@@ -1,6 +1,5 @@
-import React, { useTransition } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CircularProgress } from '@mui/material';
 
 export interface CustomMenuItemProps {
   href: string;
@@ -22,14 +21,11 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
   const location = useLocation();
   const pathname = location.pathname;
   const isActive = pathname === href;
-  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
     if (disabled) return;
 
-    startTransition(() => {
-      if (onClick) onClick();
-    });
+    if (onClick) onClick();
   };
 
   return (
@@ -43,15 +39,7 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
         onClick={handleClick}
         {...props}
       >
-        {isPending ? (
-          <CircularProgress
-            size={16}
-            className="mr-2"
-            style={{ color: '#1b5444', minWidth: '16px' }}
-          />
-        ) : (
-          icon && <div className="mr-2">{icon}</div>
-        )}
+        {icon && <div className="mr-2">{icon}</div>}
         {children}
       </div>
     </Link>

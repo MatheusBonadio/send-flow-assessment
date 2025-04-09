@@ -6,15 +6,15 @@ import AppRoutes from './routes';
 
 function App() {
   return (
-    <MenuProvider>
-      <SnackbarProviders>
-        <AlertProvider>
-          <AuthProvider>
+    <AuthProvider>
+      <MenuProvider>
+        <SnackbarProviders>
+          <AlertProvider>
             <AppRoutes />
-          </AuthProvider>
-        </AlertProvider>
-      </SnackbarProviders>
-    </MenuProvider>
+          </AlertProvider>
+        </SnackbarProviders>
+      </MenuProvider>
+    </AuthProvider>
   );
 }
 

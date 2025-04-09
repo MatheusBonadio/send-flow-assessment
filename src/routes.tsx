@@ -39,12 +39,47 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
   return user ? <>{children}</> : <Navigate to="/login" />;
 };
 
+const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress style={{ color: '#1b5444' }} />
+      </div>
+    );
+  }
+
+  return user ? <Navigate to="/dashboard" /> : <>{children}</>;
+};
+
 const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
 
         <Route
           path="/dashboard"
