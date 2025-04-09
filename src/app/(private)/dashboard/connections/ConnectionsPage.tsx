@@ -1,6 +1,6 @@
 import React from 'react';
 import { Body } from '@/presentation/components/layout/Body';
-import ConnectionTable from './components/ConnectionTable';
+import ConnectionTable from './components/ConnectionsTable';
 
 const ConnectionPage: React.FC = () => {
   return (

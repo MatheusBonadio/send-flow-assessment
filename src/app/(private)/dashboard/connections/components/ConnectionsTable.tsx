@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
-import ConnectionModal from './ConnectionModal';
+import ConnectionModal from './ConnectionsModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import ConnectionTableActions from './ConnectionTableActions';
-import { useConnections } from '@/presentation/hooks/useConnections';
-import { Connection } from '@/core/entities/connection';
+import ConnectionTableActions from './ConnectionsTableActions';
 import AddButton from '@/presentation/components/ui/AddButton';
+import { Connection, useConnections } from '../ConnectionsModel';
 
 const columns = [
   { id: 'name', label: 'Nome' },

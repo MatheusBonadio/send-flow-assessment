@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react';
-import { Connection } from '@/core/entities/connection';
 import { CustomModal } from '@/presentation/components/ui';
-import { useConnections } from '@/presentation/hooks/useConnections';
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { ConnectionForm } from './ConnectionForm';
-import { ConnectionModalActions } from './ConnectionModalActions';
+import { ConnectionForm } from './ConnectionsForm';
+import { ConnectionModalActions } from './ConnectionsModalActions';
+import { Connection, useConnections } from '../ConnectionsModel';
 
 type EditableConnectionFields = Omit<
   Connection,
