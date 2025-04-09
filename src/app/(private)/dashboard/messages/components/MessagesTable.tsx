@@ -1,9 +1,8 @@
 import React from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
-import { useMessages } from '@/presentation/hooks/useMessages';
 import { Chip } from '@mui/material';
 import StatusFilter from '@/presentation/components/ui/StatusFilter';
-import { Message } from '@/core/entities/message';
+import { Message, useMessages } from '../MessagesModel';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },

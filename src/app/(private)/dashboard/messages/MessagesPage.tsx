@@ -1,6 +1,6 @@
 import React from 'react';
 import { Body } from '@/presentation/components/layout/Body';
-import MessageTable from './components/MessageTable';
+import MessageTable from './components/MessagesTable';
 
 const MessagePage: React.FC = () => {
   return (
