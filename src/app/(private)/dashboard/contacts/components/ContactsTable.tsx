@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import CustomTable from '@/presentation/components/ui/Table';
-import ContactModal from './ContactModal';
+import ContactModal from './ContactsModal';
 import CustomDialog from '@/presentation/components/ui/Dialog';
-import ContactTableActions from './ContactTableActions';
-import { useContacts } from '@/presentation/hooks/useContacts';
-import { Contact } from '@/core/entities/contact';
+import ContactTableActions from './ContactsTableActions';
 import AddButton from '@/presentation/components/ui/AddButton';
+import { Contact, useContacts } from '../ContactsModel';
 
 const columns = [
   { id: 'name', label: 'Nome' },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Body } from '@/presentation/components/layout/Body';
-import ContactTable from './components/ContactTable';
+import ContactTable from './components/ContactsTable';
 
 const ContactPage: React.FC = () => {
   return (

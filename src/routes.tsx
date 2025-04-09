@@ -8,7 +8,7 @@ import {
 import LoginPage from '@/app/(public)/login/page';
 import RegisterPage from '@/app/(public)/register/page';
 import DashboardPage from '@/app/(private)/dashboard/page';
-import ContactPage from '@/app/(private)/dashboard/contacts/page';
+import ContactPage from '@/app/(private)/dashboard/contacts/ContactsPage';
 import ConnectionPage from '@/app/(private)/dashboard/connections/page';
 import BroadcastPage from '@/app/(private)/dashboard/broadcast/page';
 import MessagePage from '@/app/(private)/dashboard/messages/page';

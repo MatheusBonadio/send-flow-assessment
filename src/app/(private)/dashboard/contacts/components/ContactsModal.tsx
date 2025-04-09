@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react';
-import { Contact } from '@/core/entities/contact';
 import { CustomModal } from '@/presentation/components/ui';
-import { useContacts } from '@/presentation/hooks/useContacts';
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { ContactForm } from './ContactForm';
-import { ContactModalActions } from './ContactModalActions';
+import { ContactForm } from './ContactsForm';
+import { ContactModalActions } from './ContactsModalActions';
+import { Contact, useContacts } from '../ContactsModel';
 
 type EditableContactFields = Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>;
 type ContactModalProps = {
