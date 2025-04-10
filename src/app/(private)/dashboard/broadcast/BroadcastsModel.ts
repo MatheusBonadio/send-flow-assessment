@@ -23,17 +23,16 @@ export interface Broadcast {
   contactsIDs: string[];
   body: string;
   scheduledAt: Date;
-  status: 'scheduled' | 'sent';
-  createdAt: Date;
   connectionName?: string;
+  createdAt: Date;
 }
 
 export const useBroadcasts = () => {
   const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedBroadcast, setSelectedBroadcast] = useState<Broadcast | null>(
-    null,
-  );
+  const [selectedBroadcast, setSelectedBroadcast] = useState<
+    Broadcast | undefined
+  >(undefined);
   const [broadcastCount, setBroadcastCount] = useState<number | null>(null);
 
   const { user } = useAuth();
