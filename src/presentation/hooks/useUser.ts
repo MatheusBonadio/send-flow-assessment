@@ -1,5 +1,5 @@
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { FirebaseFirestore } from '@/lib/firebase';
+import { firestore } from '@/lib/firebase';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
 export type User = {
@@ -13,8 +13,7 @@ export const useUsers = () => {
 
   const addUser = async (userData: { id: string; email: string }) => {
     try {
-      const firestore = new FirebaseFirestore();
-      const userRef = doc(firestore.db, 'users', userData.id);
+      const userRef = doc(firestore, 'users', userData.id);
 
       await setDoc(userRef, {
         email: userData.email,

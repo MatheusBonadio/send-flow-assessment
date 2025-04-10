@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { FirebaseFirestore } from '@/lib/firebase';
+import { firestore } from '@/lib/firebase';
 import { map } from 'rxjs/operators';
 import {
   doc,
@@ -34,7 +34,6 @@ export const useConnections = () => {
 
   if (!user?.uid) throw new Error('ID de usuário não encontrado!');
 
-  const firestore = new FirebaseFirestore().db;
   const connectionsCollection = collection(
     firestore,
     `users/${user.uid}/connections`,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { FirebaseFirestore } from '@/lib/firebase';
+import { firestore } from '@/lib/firebase';
 import {
   Timestamp,
   Query,
@@ -45,7 +45,6 @@ export const useMessages = () => {
 
   if (!user?.uid) throw new Error('ID de usuário não encontrado!');
 
-  const firestore = new FirebaseFirestore().db;
   const messagesCollection = collection(
     firestore,
     `users/${user.uid}/messages`,
