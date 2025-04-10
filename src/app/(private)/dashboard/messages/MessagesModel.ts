@@ -169,7 +169,6 @@ export const useMessages = () => {
           status: 'scheduled',
         },
       );
-      showAlert('Mensagem adicionada com sucesso!', 'success');
       return { id: newMessageRef.id, ...messageData };
     } catch (error: unknown) {
       showAlert(String(error), 'error');

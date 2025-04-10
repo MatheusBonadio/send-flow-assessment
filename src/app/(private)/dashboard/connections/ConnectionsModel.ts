@@ -47,8 +47,6 @@ export const useConnections = () => {
         map((data) =>
           data.map((doc) => ({
             ...doc,
-            createdAt: doc.createdAt,
-            updatedAt: doc.updatedAt,
           })),
         ),
       )
@@ -124,8 +122,6 @@ export const useConnections = () => {
       ).pipe(
         map((doc) => ({
           ...doc[0],
-          createdAt: doc[0].createdAt,
-          updatedAt: doc[0].updatedAt,
         })),
       );
 

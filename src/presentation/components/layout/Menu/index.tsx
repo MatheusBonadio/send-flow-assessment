@@ -9,7 +9,7 @@ import {
 } from '@mui/icons-material';
 import { getAuth, signOut } from 'firebase/auth';
 import { app } from '@/lib/firebase';
-import { Avatar, IconButton, Tooltip } from '@mui/material'; // Removido CircularProgress
+import { Avatar, IconButton, Tooltip } from '@mui/material';
 import { useAuth } from '@/presentation/hooks/useAuth';
 import { useMenu } from '@/presentation/contexts/MenuContext';
 import { Link, useNavigate } from 'react-router-dom';

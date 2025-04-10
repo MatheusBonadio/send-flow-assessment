@@ -3,37 +3,42 @@ import { useAuth } from '@/presentation/hooks/useAuth';
 import { useAlert } from '@/presentation/providers/AlertProvider';
 import { FirebaseFirestore } from '@/lib/firebase';
 import {
-  Timestamp,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
   Query,
   CollectionReference,
-  collection,
-  addDoc,
-  doc,
-  getDoc,
+  Timestamp,
 } from 'firebase/firestore';
-import { createFirestoreObservable } from '@/lib/rxfire';
 import { map } from 'rxjs/operators';
+import { createFirestoreObservable } from '@/lib/rxfire';
+import { useConnections } from '../connections/ConnectionsModel';
 import { useMessages } from '../messages/MessagesModel';
 
 export interface Broadcast {
   id: string;
   name: string;
-  body: string;
+  connectionID: string;
   contactsIDs: string[];
+  body: string;
   scheduledAt: Date;
+  status: 'scheduled' | 'sent';
   createdAt: Date;
-  updatedAt: Date;
+  connectionName?: string;
 }
 
 export const useBroadcasts = () => {
   const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedBroadcast, setSelectedBroadcast] = useState<
-    Broadcast | undefined
-  >(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedBroadcast, setSelectedBroadcast] = useState<Broadcast | null>(
+    null,
+  );
+  const [broadcastCount, setBroadcastCount] = useState<number | null>(null);
 
   const { user } = useAuth();
   const { showAlert } = useAlert();
+  const { connections } = useConnections();
   const { addMessage } = useMessages();
 
   if (!user?.uid) throw new Error('ID de usuário não encontrado!');
@@ -46,16 +51,26 @@ export const useBroadcasts = () => {
 
   useEffect(() => {
     setLoading(true);
+
     const subscription = createFirestoreObservable(broadcastsCollection)
       .pipe(
         map((data) =>
-          data.map((doc) => ({
-            ...doc,
-            scheduledAt:
+          data.map((doc) => {
+            const scheduledAt =
               doc.scheduledAt instanceof Timestamp
                 ? doc.scheduledAt.toDate()
-                : doc.scheduledAt,
-          })),
+                : doc.scheduledAt;
+
+            const connectionName = connections.find(
+              (c) => c.id === doc.connectionID,
+            )?.name;
+
+            return {
+              ...doc,
+              scheduledAt,
+              connectionName,
+            };
+          }),
         ),
       )
       .subscribe({
@@ -70,10 +85,21 @@ export const useBroadcasts = () => {
       });
 
     return () => subscription.unsubscribe();
+  }, [connections]);
+
+  useEffect(() => {
+    const subscription = createFirestoreObservable(broadcastsCollection)
+      .pipe(map((data) => data.length))
+      .subscribe({
+        next: (count) => setBroadcastCount(count),
+        error: (error) => showAlert(String(error), 'error'),
+      });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const addBroadcast = async (
-    broadcastData: Omit<Broadcast, 'id' | 'createdAt' | 'updatedAt'>,
+    broadcastData: Omit<Broadcast, 'id' | 'createdAt'>,
   ) => {
     try {
       setLoading(true);
@@ -83,7 +109,6 @@ export const useBroadcasts = () => {
         {
           ...broadcastData,
           createdAt: new Date(),
-          updatedAt: new Date(),
         },
       );
 
@@ -107,29 +132,13 @@ export const useBroadcasts = () => {
     }
   };
 
-  const getBroadcastById = async (id: string) => {
+  const deleteBroadcast = async (id: string) => {
     try {
-      setLoading(true);
       const broadcastDoc = doc(firestore, `users/${user.uid}/broadcasts/${id}`);
-      const snapshot = await getDoc(broadcastDoc);
-      if (!snapshot.exists()) {
-        showAlert('Broadcast não encontrado', 'error');
-        return;
-      }
-      const data = snapshot.data() as Broadcast;
-      const enriched: Broadcast = {
-        ...data,
-        id: snapshot.id,
-        scheduledAt:
-          data.scheduledAt instanceof Timestamp
-            ? data.scheduledAt.toDate()
-            : data.scheduledAt,
-      };
-      setSelectedBroadcast(enriched);
+      await deleteDoc(broadcastDoc);
+      showAlert('Broadcast excluído com sucesso!', 'success');
     } catch (error: unknown) {
       showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -139,6 +148,7 @@ export const useBroadcasts = () => {
     selectedBroadcast,
     setSelectedBroadcast,
     addBroadcast,
-    getBroadcastById,
+    deleteBroadcast,
+    broadcastCount,
   };
 };
