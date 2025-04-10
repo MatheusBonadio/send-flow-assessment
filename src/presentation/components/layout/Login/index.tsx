@@ -1,5 +1,3 @@
-'use client';
-
 import { FormEvent, useState } from 'react';
 import {
   getAuth,
@@ -8,7 +6,7 @@ import {
   GithubAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/auth';
+import { app } from '@/lib/firebase';
 import {
   Card,
   Alert,
@@ -22,7 +20,7 @@ import {
 } from '@mui/material';
 import { GitHub, Google } from '@mui/icons-material';
 import { useUsers } from '@/presentation/hooks/useUser';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -30,7 +28,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { addUser } = useUsers();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const auth = getAuth(app);
 
@@ -40,21 +38,9 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const credential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const idToken = await credential.user.getIdToken();
+      await signInWithEmailAndPassword(auth, email, password);
 
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      router.push('/dashboard');
-      router.refresh();
+      navigate('/dashboard');
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -68,7 +54,6 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
       const user = result.user;
 
       const isFirstLogin =
@@ -77,14 +62,7 @@ export default function Login() {
       if (isFirstLogin)
         await addUser({ id: user.uid, email: user.email ?? '' });
 
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      router.push('/dashboard');
-      router.refresh();
+      navigate('/dashboard');
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -98,7 +76,6 @@ export default function Login() {
     try {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
       const user = result.user;
 
       const isFirstLogin =
@@ -107,14 +84,7 @@ export default function Login() {
       if (isFirstLogin)
         await addUser({ id: user.uid, email: user.email ?? '' });
 
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      router.push('/dashboard');
-      router.refresh();
+      navigate('/dashboard');
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);
@@ -218,13 +188,6 @@ export default function Login() {
                     <label className="text-sm leading-none font-medium">
                       Senha
                     </label>
-                    {/* <Link
-                      href="#"
-                      underline="hover"
-                      className="!text-xs !text-gray-900"
-                    >
-                      Esqueceu sua senha?
-                    </Link> */}
                   </div>
                   <input
                     type="password"

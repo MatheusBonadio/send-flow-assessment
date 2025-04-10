@@ -1,18 +1,47 @@
-'use client';
+import { type User, onAuthStateChanged, signOut } from 'firebase/auth';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AuthContext } from '@/presentation/contexts/AuthContext';
+import { auth } from '@/lib/firebase';
 
-import * as React from 'react';
-import { AuthContext, User } from '@/presentation/contexts/AuthContext';
-
-export interface AuthProviderProps {
+interface Datas {
   user: User | null;
+  loading: boolean;
+}
+
+interface Props {
   children: React.ReactNode;
 }
 
-export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
-  user,
-  children,
-}) => {
+export default function AuthProvider({ children }: Props) {
+  const [datas, setDatas] = useState<Datas>({
+    user: null,
+    loading: true,
+  });
+
+  const logout = useCallback(async () => {
+    await signOut(auth);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setDatas({
+        user,
+        loading: false,
+      });
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const context = useMemo(() => {
+    return {
+      user: datas.user,
+      loading: datas.loading,
+      logout,
+    };
+  }, [datas.user, datas.loading, logout]);
+
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
   );
-};
+}

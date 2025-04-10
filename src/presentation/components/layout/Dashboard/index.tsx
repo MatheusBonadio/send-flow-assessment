@@ -1,5 +1,7 @@
-'use client';
-
+import { useBroadcasts } from '@/app/(private)/dashboard/broadcast/BroadcastsModel';
+import { useConnections } from '@/app/(private)/dashboard/connections/ConnectionsModel';
+import { useContacts } from '@/app/(private)/dashboard/contacts/ContactsModel';
+import { useMessages } from '@/app/(private)/dashboard/messages/MessagesModel';
 import CustomCard from '@/presentation/components/ui/Card';
 import {
   AccessAlarmOutlined,
@@ -9,10 +11,6 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { Skeleton } from '@mui/material';
-import { useContacts } from '@/presentation/hooks/useContacts';
-import { useConnections } from '@/presentation/hooks/useConnections';
-import { useBroadcasts } from '@/presentation/hooks/useBroadcasts';
-import { useMessages } from '@/presentation/hooks/useMessages';
 import { JSX } from 'react';
 
 const DashboardCard = ({

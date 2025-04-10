@@ -1,9 +1,7 @@
-'use client';
-
 import { FormEvent, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from '@/infrastructure/firebase/auth';
-import { useRouter } from 'next/navigation';
+import { app } from '@/lib/firebase';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   Alert,
@@ -23,7 +21,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { addUser } = useUsers();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -44,7 +42,7 @@ export default function Register() {
       );
       await addUser({ id: newUser.user.uid, email: newUser.user.email ?? '' });
 
-      router.push('/login');
+      navigate('/login');
     } catch (e) {
       setLoading(false);
       setError((e as Error).message);

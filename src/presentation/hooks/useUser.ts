@@ -1,30 +1,32 @@
 import { useAlert } from '@/presentation/providers/AlertProvider';
-import { UserRepository } from '@/infrastructure/repositories/userRepository';
-import { FirebaseFirestore } from '@/infrastructure/firebase/firestore';
-import { User } from '@/core/entities/user';
-import { UserUseCases } from '@/core/useCases/userUseCase';
+import { firestore } from '@/lib/firebase';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+
+export type User = {
+  id: string;
+  email: string;
+  createdAt?: Date;
+};
 
 export const useUsers = () => {
   const { showAlert } = useAlert();
 
-  const firestore = new FirebaseFirestore();
-  const userRepository = new UserRepository(firestore);
-  const userUseCases = new UserUseCases(userRepository);
-
-  const addUser = async (userData: User) => {
+  const addUser = async (userData: { id: string; email: string }) => {
     try {
-      const newUser = await userUseCases.create({
-        ...userData,
-      } as User);
-      
+      const userRef = doc(firestore, 'users', userData.id);
+
+      await setDoc(userRef, {
+        email: userData.email,
+        createdAt: Timestamp.now(),
+      });
+
       showAlert('Usuário criado com sucesso!', 'success');
-      return newUser;
     } catch (error: unknown) {
       showAlert(String(error), 'error');
-    } 
+    }
   };
 
   return {
-    addUser
+    addUser,
   };
 };

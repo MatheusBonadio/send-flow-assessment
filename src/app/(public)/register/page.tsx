@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-'use client';
-
 import Register from '@/presentation/components/layout/Register';
 
 export default function RegisterPage() {
