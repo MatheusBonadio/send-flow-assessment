@@ -1,16 +1,12 @@
 import React from 'react';
 
-export interface CustomMenuItemProps {
+export interface CustomCardProps {
   title: string;
   value: React.ReactNode;
   icon?: React.ReactNode;
 }
 
-const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
-  title,
-  value,
-  icon,
-}) => {
+const CustomCard: React.FC<CustomCardProps> = ({ title, value, icon }) => {
   return (
     <div
       className="rounded-xl border border-[#e4e4e7] shadow"
@@ -31,4 +27,4 @@ const CustomMenuItem: React.FC<CustomMenuItemProps> = ({
   );
 };
 
-export default CustomMenuItem;
+export default CustomCard;
