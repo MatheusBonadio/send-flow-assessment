@@ -5,16 +5,16 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import LoginPage from '@/app/(public)/login/page';
-import RegisterPage from '@/app/(public)/register/page';
-import DashboardPage from '@/app/(private)/dashboard/page';
-import ContactPage from '@/app/(private)/dashboard/contacts/ContactsPage';
-import ConnectionPage from '@/app/(private)/dashboard/connections/ConnectionsPage';
-import BroadcastPage from '@/app/(private)/dashboard/broadcast/BroadcastsPage';
-import MessagePage from '@/app/(private)/dashboard/messages/MessagesPage';
-import { useAuth } from '@/presentation/hooks/useAuth';
-import { Menu } from '@/presentation/components/layout/Menu';
-import { Loading } from '@/presentation/components/ui';
+import LoginPage from '@/app/apps/login/LoginPage';
+import RegisterPage from '@/app/apps/register/RegisterPage';
+import DashboardPage from '@/app/apps/dashboard/DashboardPage';
+import ContactPage from '@/app/apps/contacts/ContactsPage';
+import ConnectionPage from '@/app/apps/connections/ConnectionsPage';
+import BroadcastPage from '@/app/apps/broadcasts/BroadcastsPage';
+import MessagePage from '@/app/apps/messages/MessagesPage';
+import { useAuth } from '@/app/apps/auth/useAuth';
+import { Menu } from '@/app/apps/menu/MenuSide';
+import { Loading } from '@/app/core/components/ui';
 
 interface RouteProps extends PropsWithChildren {}
 
