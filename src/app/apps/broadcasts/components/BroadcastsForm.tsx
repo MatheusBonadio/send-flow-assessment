@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import { CustomInput } from '@/app/core/components/ui';
+import { CustomInput } from '@/app/components/ui';
 import { Contact } from '../../contacts/ContactsModel';
 import { Connection } from '../../connections/ConnectionsModel';
 

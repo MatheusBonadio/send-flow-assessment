@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chip } from '@mui/material';
 import { Message, useMessages } from '../MessagesModel';
-import { CustomTable, StatusFilter } from '@/app/core/components/ui';
+import { CustomTable, StatusFilter } from '@/app/components/ui';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },

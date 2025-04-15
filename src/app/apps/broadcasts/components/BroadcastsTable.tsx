@@ -4,7 +4,7 @@ import BroadcastTableActions from './BroadcastsTableActions';
 import { useBroadcasts } from '../BroadcastsModel';
 import { useContacts } from '../../contacts/ContactsModel';
 import { useConnections } from '../../connections/ConnectionsModel';
-import { AddButton, CustomDialog, CustomTable } from '@/app/core/components/ui';
+import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
 
 const columns = [
   { id: 'name', label: 'Nome' },

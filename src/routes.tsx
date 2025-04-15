@@ -14,7 +14,7 @@ import BroadcastPage from '@/app/apps/broadcasts/BroadcastsPage';
 import MessagePage from '@/app/apps/messages/MessagesPage';
 import { useAuth } from '@/app/apps/auth/useAuth';
 import { Menu } from '@/app/apps/menu/MenuSide';
-import { Loading } from '@/app/core/components/ui';
+import { Loading } from '@/app/components/ui';
 
 interface RouteProps extends PropsWithChildren {}
 

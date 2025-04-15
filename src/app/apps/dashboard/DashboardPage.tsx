@@ -1,4 +1,4 @@
-import { Body } from '@/app/core/components/layout/Body';
+import { Body } from '@/app/components/layout/Body';
 import { useBroadcasts } from '@/app/apps/broadcasts/BroadcastsModel';
 import { useConnections } from '@/app/apps/connections/ConnectionsModel';
 import { useContacts } from '@/app/apps/contacts/ContactsModel';

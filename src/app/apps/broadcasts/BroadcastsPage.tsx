@@ -1,5 +1,5 @@
 import React from 'react';
-import { Body } from '@/app/core/components/layout/Body';
+import { Body } from '@/app/components/layout/Body';
 import BroadcastTable from './components/BroadcastsTable';
 
 const BroadcastPage: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ContactModal from './ContactsModal';
 import ContactTableActions from './ContactsTableActions';
 import { Contact, useContacts } from '../ContactsModel';
-import { AddButton, CustomDialog, CustomTable } from '@/app/core/components/ui';
+import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
 
 const columns = [
   { id: 'name', label: 'Nome' },

@@ -1,4 +1,4 @@
-import { CustomMenuItem } from '@/app/core/components/ui';
+import { CustomMenuItem } from '@/app/components/ui';
 import {
   ContactsOutlined,
   DashboardOutlined,

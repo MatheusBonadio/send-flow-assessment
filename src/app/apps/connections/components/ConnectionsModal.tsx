@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { CustomModal } from '@/app/core/components/ui';
+import { CustomModal } from '@/app/components/ui';
 import { useAlert } from '@/app/apps/alert/AlertProvider';
 import { ConnectionForm } from './ConnectionsForm';
 import { ConnectionModalActions } from './ConnectionsModalActions';

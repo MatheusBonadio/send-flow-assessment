@@ -1,4 +1,4 @@
-import { CustomCard } from '@/app/core/components/ui';
+import { CustomCard } from '@/app/components/ui';
 import { Skeleton } from '@mui/material';
 import { JSX } from 'react';
 

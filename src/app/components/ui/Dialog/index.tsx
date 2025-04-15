@@ -1,4 +1,4 @@
-import { CustomButton, CustomModal } from '@/app/core/components/ui';
+import { CustomButton, CustomModal } from '@/app/components/ui';
 import { Delete } from '@mui/icons-material';
 
 interface IProps {

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomInput } from '@/app/core/components/ui';
+import { CustomInput } from '@/app/components/ui';
 
 const formSchema = z.object({
   id: z.string().optional(),

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ConnectionModal from './ConnectionsModal';
 import ConnectionTableActions from './ConnectionsTableActions';
 import { Connection, useConnections } from '../ConnectionsModel';
-import { AddButton, CustomDialog, CustomTable } from '@/app/core/components/ui';
+import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
 
 const columns = [
   { id: 'name', label: 'Nome' },

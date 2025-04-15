@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { CustomModal } from '@/app/core/components/ui';
+import { CustomModal } from '@/app/components/ui';
 import { useAlert } from '@/app/apps/alert/AlertProvider';
 import { ContactForm } from './ContactsForm';
 import { ContactModalActions } from './ContactsModalActions';

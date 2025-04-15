@@ -1,4 +1,4 @@
-import { CustomButton } from '@/app/core/components/ui';
+import { CustomButton } from '@/app/components/ui';
 import { Save } from '@mui/icons-material';
 
 interface BroadcastModalActionsProps {
