@@ -3,12 +3,17 @@ import { CustomModal } from '@/app/components/ui';
 import { useAlert } from '@/app/apps/alert/AlertProvider';
 import { ConnectionForm } from './ConnectionsForm';
 import { ConnectionModalActions } from './ConnectionsModalActions';
-import { Connection, useConnections } from '../ConnectionsModel';
+import {
+  Connection,
+  createConnection,
+  upsertConnection,
+} from '../ConnectionsModel';
 
 type EditableConnectionFields = Omit<
   Connection,
   'id' | 'createdAt' | 'updatedAt'
 >;
+
 type ConnectionModalProps = {
   open: boolean;
   onClose: () => void;
@@ -30,7 +35,6 @@ export default function ConnectionModal({
   connection,
 }: ConnectionModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addConnection, updateConnection } = useConnections();
   const { showAlert } = useAlert();
 
   const handleConnectionSubmission = useCallback(
@@ -38,12 +42,11 @@ export default function ConnectionModal({
       try {
         setIsSubmitting(true);
 
-        if (connection?.id)
-          await updateConnection(connection.id, {
-            ...connection,
-            ...connectionData,
-          });
-        else await addConnection(connectionData);
+        if (connection?.id) {
+          await upsertConnection(connection.id, connectionData);
+        } else {
+          await createConnection(connectionData);
+        }
 
         onClose();
       } catch (error) {
@@ -54,7 +57,7 @@ export default function ConnectionModal({
         setIsSubmitting(false);
       }
     },
-    [connection, onClose, addConnection, updateConnection, showAlert],
+    [connection, onClose, showAlert],
   );
 
   return (

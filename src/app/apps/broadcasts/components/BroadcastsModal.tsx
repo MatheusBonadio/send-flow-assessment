@@ -3,11 +3,16 @@ import { CustomModal } from '@/app/components/ui';
 import { useAlert } from '@/app/apps/alert/AlertProvider';
 import { BroadcastForm } from './BroadcastsForm';
 import { BroadcastModalActions } from './BroadcastsModalActions';
-import { Broadcast, useBroadcasts } from '../BroadcastsModel';
+import { Broadcast, createBroadcast } from '../BroadcastsModel';
 import { Contact } from '../../contacts/ContactsModel';
 import { Connection } from '../../connections/ConnectionsModel';
+import { Timestamp } from 'firebase/firestore';
 
-type EditableBroadcastFields = Omit<Broadcast, 'id' | 'createdAt'> & {
+type EditableBroadcastFields = Omit<
+  Broadcast,
+  'id' | 'createdAt' | 'scheduledAt'
+> & {
+  scheduledAt: Date;
   connectionName?: string;
 };
 
@@ -21,7 +26,7 @@ type BroadcastModalProps = {
 
 const getDefaultValues = (broadcast?: Broadcast): EditableBroadcastFields => ({
   name: broadcast?.name || '',
-  scheduledAt: broadcast?.scheduledAt || new Date(),
+  scheduledAt: broadcast?.scheduledAt?.toDate?.() || new Date(),
   body: broadcast?.body || '',
   connectionID: broadcast?.connectionID || '',
   contactsIDs: broadcast?.contactsIDs || [],
@@ -38,7 +43,6 @@ export default function BroadcastModal({
   contacts,
 }: BroadcastModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addBroadcast } = useBroadcasts();
   const { showAlert } = useAlert();
 
   const handleBroadcastSubmission = useCallback(
@@ -46,9 +50,13 @@ export default function BroadcastModal({
       try {
         setIsSubmitting(true);
 
-        await addBroadcast(broadcastData);
+        await createBroadcast({
+          ...broadcastData,
+          scheduledAt: Timestamp.fromDate(broadcastData.scheduledAt),
+        });
 
         onClose();
+        showAlert('Broadcast criado com sucesso!', 'success');
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Operação falhou';
@@ -57,7 +65,7 @@ export default function BroadcastModal({
         setIsSubmitting(false);
       }
     },
-    [onClose, addBroadcast, showAlert],
+    [onClose, showAlert],
   );
 
   return (

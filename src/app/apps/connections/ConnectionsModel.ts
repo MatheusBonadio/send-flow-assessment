@@ -1,174 +1,82 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/app/apps/auth/useAuth';
-import { useAlert } from '@/app/apps/alert/AlertProvider';
-import { firestore } from '@/app/core/lib/firebase';
-import { map } from 'rxjs/operators';
 import {
-  doc,
   collection,
+  query,
+  orderBy,
+  serverTimestamp,
   addDoc,
+  setDoc,
+  doc,
   deleteDoc,
-  updateDoc,
-  Query,
+  PartialWithFieldValue,
+  getDoc,
   CollectionReference,
+  Timestamp,
 } from 'firebase/firestore';
-import { createFirestoreObservable } from '@/app/core/lib/rxfire';
+import { auth, firestore } from '@/app/core/lib/firebase';
+import { collectionData } from '@/app/core/lib/rxjs';
+import { useRxValue } from '@/app/core/hooks/useRxValue';
+import { map } from 'rxjs';
 
 export interface Connection {
   id: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
-export const useConnections = () => {
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedConnection, setSelectedConnection] = useState<
-    Connection | undefined
-  >(undefined);
-  const [connectionCount, setConnectionCount] = useState<number | null>(null);
-  const { user } = useAuth();
+export function connectionsCollection(): CollectionReference {
+  const userId = auth.currentUser?.uid;
+  
+  if (!userId) throw new Error('ID de usuário não encontrado!');
 
-  const { showAlert } = useAlert();
+  return collection(firestore, `users/${userId}/connections`);
+}
 
-  if (!user?.uid) throw new Error('ID de usuário não encontrado!');
+export function useConnections() {
+  return useRxValue(getConnections$());
+}
 
-  const connectionsCollection = collection(
-    firestore,
-    `users/${user.uid}/connections`,
-  ) as Query<Connection>;
+export function useConnectionsCount() {
+  return useRxValue(getConnectionCount$());
+}
 
-  useEffect(() => {
-    setLoading(true);
-    const subscription = createFirestoreObservable(connectionsCollection)
-      .pipe(
-        map((data) =>
-          data.map((doc) => ({
-            ...doc,
-          })),
-        ),
-      )
-      .subscribe({
-        next: (newConnections) => {
-          setConnections(newConnections);
-          setLoading(false);
-        },
-        error: (error) => {
-          showAlert(String(error), 'error');
-          setLoading(false);
-        },
-      });
+export function getConnections$() {
+  return collectionData<Connection>(
+    query(connectionsCollection(), orderBy('createdAt', 'asc')),
+  );
+}
 
-    return () => subscription.unsubscribe();
-  }, []);
+export function getConnectionCount$() {
+  return collectionData<Connection>(query(connectionsCollection())).pipe(
+    map((connections) => connections.length),
+  );
+}
 
-  useEffect(() => {
-    const subscription = createFirestoreObservable(connectionsCollection)
-      .pipe(map((data) => data.length))
-      .subscribe({
-        next: (count) => setConnectionCount(count),
-        error: (error) => showAlert(String(error), 'error'),
-      });
+export function getConnectionById(id: string) {
+  return getDoc(doc(connectionsCollection(), id));
+}
 
-    return () => subscription.unsubscribe();
-  }, []);
+export function createConnection(
+  data: PartialWithFieldValue<Connection>,
+) {
+  return addDoc(connectionsCollection(), {
+    ...data,
+    updatedAt: serverTimestamp(),
+    createdAt: serverTimestamp(),
+  });
+}
 
-  const addConnection = async (
-    connectionData: Omit<Connection, 'id' | 'createdAt' | 'updatedAt'>,
-  ) => {
-    try {
-      setLoading(true);
-      const newConnectionRef = await addDoc(
-        connectionsCollection as CollectionReference,
-        {
-          ...connectionData,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      );
-      showAlert('Conexão adicionada com sucesso!', 'success');
-      return { id: newConnectionRef.id, ...connectionData };
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+export function upsertConnection(
+  id: string,
+  data: PartialWithFieldValue<Connection>,
+) {
+  return setDoc(
+    doc(connectionsCollection(), id),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
 
-  const deleteConnection = async (id: string) => {
-    try {
-      const connectionDoc = doc(
-        firestore,
-        `users/${user.uid}/connections/${id}`,
-      );
-      await deleteDoc(connectionDoc);
-      showAlert('Conexão excluída com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    }
-  };
-
-  const getConnectionById = async (id: string) => {
-    try {
-      setLoading(true);
-      const connectionDoc = doc(
-        firestore,
-        `users/${user.uid}/connections/${id}`,
-      );
-      const connection$ = createFirestoreObservable(
-        connectionDoc as unknown as Query<Connection>,
-      ).pipe(
-        map((doc) => ({
-          ...doc[0],
-        })),
-      );
-
-      const subscription = connection$.subscribe({
-        next: (connection) => setSelectedConnection(connection as Connection),
-        error: (error) => showAlert(String(error), 'error'),
-      });
-
-      return () => subscription.unsubscribe();
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateConnection = async (
-    id: string,
-    connectionData: Partial<Connection>,
-  ) => {
-    try {
-      setLoading(true);
-      const connectionDoc = doc(
-        firestore,
-        `users/${user.uid}/connections/${id}`,
-      );
-      await updateDoc(connectionDoc, {
-        ...connectionData,
-        updatedAt: new Date(),
-      });
-      showAlert('Conexão atualizada com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return {
-    connections,
-    loading,
-    connectionCount,
-    selectedConnection,
-    setSelectedConnection,
-    addConnection,
-    deleteConnection,
-    getConnectionById,
-    updateConnection,
-  };
-};
+export function deleteConnection(id: string) {
+  return deleteDoc(doc(connectionsCollection(), id));
+}

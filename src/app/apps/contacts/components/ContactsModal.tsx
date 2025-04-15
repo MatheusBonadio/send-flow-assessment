@@ -3,7 +3,7 @@ import { CustomModal } from '@/app/components/ui';
 import { useAlert } from '@/app/apps/alert/AlertProvider';
 import { ContactForm } from './ContactsForm';
 import { ContactModalActions } from './ContactsModalActions';
-import { Contact, useContacts } from '../ContactsModel';
+import { Contact, createContact, upsertContact } from '../ContactsModel';
 
 type EditableContactFields = Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>;
 type ContactModalProps = {
@@ -26,7 +26,6 @@ export default function ContactModal({
   contact,
 }: ContactModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addContact, updateContact } = useContacts();
   const { showAlert } = useAlert();
 
   const handleContactSubmission = useCallback(
@@ -34,9 +33,8 @@ export default function ContactModal({
       try {
         setIsSubmitting(true);
 
-        if (contact?.id)
-          await updateContact(contact.id, { ...contact, ...contactData });
-        else await addContact(contactData);
+        if (contact?.id) await upsertContact(contact.id, contactData);
+        else await createContact(contactData);
 
         onClose();
       } catch (error) {
@@ -47,7 +45,7 @@ export default function ContactModal({
         setIsSubmitting(false);
       }
     },
-    [contact, onClose, addContact, updateContact, showAlert],
+    [contact, onClose, showAlert],
   );
 
   return (

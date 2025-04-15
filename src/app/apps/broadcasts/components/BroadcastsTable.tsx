@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import BroadcastModal from './BroadcastsModal';
 import BroadcastTableActions from './BroadcastsTableActions';
-import { useBroadcasts } from '../BroadcastsModel';
+import { Broadcast, useBroadcasts } from '../BroadcastsModel';
 import { useContacts } from '../../contacts/ContactsModel';
 import { useConnections } from '../../connections/ConnectionsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
+import { deleteBroadcast } from '../BroadcastsModel';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -15,30 +16,35 @@ const columns = [
 ];
 
 const BroadcastTable: React.FC = () => {
-  const {
-    broadcasts,
-    loading,
-    selectedBroadcast,
-    setSelectedBroadcast,
-    deleteBroadcast,
-  } = useBroadcasts();
-  const { contacts } = useContacts();
-  const { connections } = useConnections();
+  const broadcasts = useBroadcasts();
+  const contacts = useContacts();
+  const connections = useConnections();
+
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedBroadcast, setSelectedBroadcast] = useState<Broadcast | null>(
+    null,
+  );
   const [modalAction, setModalAction] = useState<'create' | 'edit'>('create');
 
   const handleOpenCreateModal = () => {
-    setSelectedBroadcast(undefined);
+    setSelectedBroadcast(null);
     setModalAction('create');
     setOpenModal(true);
   };
 
-  const data = broadcasts.map((broadcast) => ({
+  const handleDeleteBroadcast = async () => {
+    if (selectedBroadcast?.id) {
+      await deleteBroadcast(selectedBroadcast.id);
+    }
+    setOpenDialog(false);
+  };
+
+  const data = (broadcasts ?? []).map((broadcast) => ({
     id: broadcast.id,
     connectionName: broadcast.connectionName,
     name: broadcast.name,
-    scheduledAt: broadcast.scheduledAt.toLocaleString(),
+    scheduledAt: broadcast.scheduledAt.toDate().toLocaleString(),
     contactsIDs: broadcast.contactsIDs.length,
     actions: (
       <BroadcastTableActions
@@ -57,24 +63,29 @@ const BroadcastTable: React.FC = () => {
           <AddButton onClick={handleOpenCreateModal} />
         </div>
 
-        <CustomTable columns={columns} data={data} loading={loading} />
+        <CustomTable
+          columns={columns}
+          data={data}
+          loading={!broadcasts?.length}
+        />
 
         <BroadcastModal
           open={openModal}
           onClose={() => setOpenModal(false)}
-          broadcast={modalAction === 'edit' ? selectedBroadcast : undefined}
-          contacts={contacts}
-          connections={connections}
+          broadcast={
+            modalAction === 'edit' && selectedBroadcast
+              ? selectedBroadcast
+              : undefined
+          }
+          contacts={contacts ?? []}
+          connections={connections ?? []}
         />
 
         {openDialog && (
           <CustomDialog
             open={openDialog}
             onClose={() => setOpenDialog(false)}
-            onConfirm={() => {
-              if (selectedBroadcast?.id) deleteBroadcast(selectedBroadcast.id);
-              setOpenDialog(false);
-            }}
+            onConfirm={handleDeleteBroadcast}
           />
         )}
       </div>

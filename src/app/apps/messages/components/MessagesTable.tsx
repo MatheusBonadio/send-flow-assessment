@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Chip } from '@mui/material';
-import { Message, useMessages } from '../MessagesModel';
+import { Message, StatusMessage, getMessages$ } from '../MessagesModel';
 import { CustomTable, StatusFilter } from '@/app/components/ui';
 
 const columns = [
@@ -22,8 +22,8 @@ const formatMessageBody = (body: string) => (
 
 const renderStatusChip = (status: string) => (
   <Chip
-    label={status === 'scheduled' ? 'Agendada' : 'Enviada'}
-    color={status === 'scheduled' ? 'default' : 'success'}
+    label={status === StatusMessage.Scheduled ? 'Agendada' : 'Enviada'}
+    color={status === StatusMessage.Scheduled ? 'default' : 'success'}
     size="small"
     variant="outlined"
     className="my-2"
@@ -33,37 +33,41 @@ const renderStatusChip = (status: string) => (
 const processTableData = (messages: Message[]) =>
   messages.map((message) => ({
     id: message.id,
-    contactName: message.contactName,
+    contactName: message.contactName || 'Desconhecido',
     broadcastName: message.broadcastName,
     body: formatMessageBody(message.body),
-    scheduledAt: message.scheduledAt.toLocaleString(),
+    scheduledAt: message.scheduledAt.toDate().toLocaleString(),
     status: renderStatusChip(message.status),
   }));
 
 const MessageTable: React.FC = () => {
-  const { messagesScheduled, messagesSent, loading } = useMessages();
-  const [statusFilter, setStatusFilter] = React.useState('scheduled');
-  const [messageSource] = React.useState<'scheduled' | 'sent'>('scheduled');
+  const [statusFilter, setStatusFilter] = useState<StatusMessage>(
+    StatusMessage.Scheduled,
+  );
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const getFilteredMessages = () => {
-    if (statusFilter === 'sent') return messagesSent;
-    if (statusFilter === 'scheduled') return messagesScheduled;
-    return messageSource === 'scheduled' ? messagesScheduled : messagesSent;
-  };
+  useEffect(() => {
+    setLoading(true);
+    const subscription = getMessages$(statusFilter).subscribe(async (msgs) => {
+      const resolvedMessages = await Promise.all(msgs);
+      setMessages(resolvedMessages);
+      setLoading(false);
+    });
 
-  const messages = getFilteredMessages();
+    return () => subscription.unsubscribe();
+  }, [statusFilter]);
+
   const data = processTableData(messages);
 
   return (
-    <>
-      <div className="flex w-full flex-col gap-4 p-4 text-black">
-        <StatusFilter
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-        />
-        <CustomTable columns={columns} data={data} loading={loading} />
-      </div>
-    </>
+    <div className="flex w-full flex-col gap-4 p-4 text-black">
+      <StatusFilter
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
+      <CustomTable columns={columns} data={data} loading={loading} />
+    </div>
   );
 };
 

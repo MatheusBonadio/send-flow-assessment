@@ -1,9 +1,10 @@
 import React from 'react';
 import { AccessAlarmOutlined, Send } from '@mui/icons-material';
+import { StatusMessage } from '@/app/apps/messages/MessagesModel';
 
 interface StatusFilterProps {
   statusFilter: string;
-  setStatusFilter: (status: string) => void;
+  setStatusFilter: (status: StatusMessage) => void;
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({
@@ -13,13 +14,13 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
   return (
     <div className="flex max-w-fit rounded-lg bg-[#f4f4f5] p-1 text-sm font-medium">
       <div
-        onClick={() => setStatusFilter('scheduled')}
+        onClick={() => setStatusFilter(StatusMessage.Scheduled)}
         className={`cursor-pointer rounded-lg px-3 py-1 pl-4 ${
-          statusFilter === 'scheduled' ? 'bg-white' : ''
+          statusFilter === StatusMessage.Scheduled ? 'bg-white' : ''
         }`}
         style={{
           boxShadow:
-            statusFilter === 'scheduled'
+            statusFilter === StatusMessage.Scheduled
               ? '0 0 #0000, 0 0 #0000, 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px -1px rgba(0, 0, 0, .1)'
               : 'none',
         }}
@@ -35,13 +36,13 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
         Agendadas
       </div>
       <div
-        onClick={() => setStatusFilter('sent')}
+        onClick={() => setStatusFilter(StatusMessage.Sent)}
         className={`cursor-pointer rounded-lg px-3 py-1 pl-4 ${
-          statusFilter === 'sent' ? 'bg-white' : ''
+          statusFilter === StatusMessage.Sent ? 'bg-white' : ''
         }`}
         style={{
           boxShadow:
-            statusFilter === 'sent'
+            statusFilter === StatusMessage.Sent
               ? '0 0 #0000, 0 0 #0000, 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px -1px rgba(0, 0, 0, .1)'
               : 'none',
         }}

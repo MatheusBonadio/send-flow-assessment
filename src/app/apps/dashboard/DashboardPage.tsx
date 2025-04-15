@@ -1,9 +1,11 @@
 import { Body } from '@/app/components/layout/Body';
-import { useBroadcasts } from '@/app/apps/broadcasts/BroadcastsModel';
-import { useConnections } from '@/app/apps/connections/ConnectionsModel';
-import { useContacts } from '@/app/apps/contacts/ContactsModel';
-import { useMessages } from '@/app/apps/messages/MessagesModel';
-import DashboardCard from './components/DashboardCard'; // Atualizado
+import { useBroadcastsCount } from '@/app/apps/broadcasts/BroadcastsModel';
+import { useConnectionsCount } from '@/app/apps/connections/ConnectionsModel';
+import {
+  StatusMessage,
+  useMessagesCount,
+} from '@/app/apps/messages/MessagesModel';
+import DashboardCard from './components/DashboardCard';
 import {
   AccessAlarmOutlined,
   ContactsOutlined,
@@ -11,12 +13,14 @@ import {
   Send,
   WhatsApp,
 } from '@mui/icons-material';
+import { useContactsCount } from '../contacts/ContactsModel';
 
 function Dashboard() {
-  const { contactCount } = useContacts();
-  const { connectionCount } = useConnections();
-  const { broadcastCount } = useBroadcasts();
-  const { messageCountScheduled, messageCountSent } = useMessages();
+  const contactCount = useContactsCount();
+  const connectionCount = useConnectionsCount();
+  const broadcastCount = useBroadcastsCount();
+  const messageCountScheduled = useMessagesCount(StatusMessage.Scheduled);
+  const messageCountSent = useMessagesCount(StatusMessage.Sent);
 
   const cardsData = [
     {
@@ -53,7 +57,7 @@ function Dashboard() {
           <DashboardCard
             key={index}
             title={card.title}
-            value={card.value}
+            value={card.value ?? null}
             icon={card.icon}
           />
         ))}

@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/app/apps/auth/useAuth';
-import { useAlert } from '@/app/apps/alert/AlertProvider';
-import { firestore } from '@/app/core/lib/firebase';
 import {
-  addDoc,
   collection,
-  deleteDoc,
-  doc,
-  Query,
+  query,
+  orderBy,
+  serverTimestamp,
+  addDoc,
   CollectionReference,
+  doc,
+  deleteDoc,
+  PartialWithFieldValue,
+  getDoc,
   Timestamp,
 } from 'firebase/firestore';
-import { map } from 'rxjs/operators';
-import { createFirestoreObservable } from '@/app/core/lib/rxfire';
-import { useConnections } from '../connections/ConnectionsModel';
-import { useMessages } from '../messages/MessagesModel';
+import { auth, firestore } from '@/app/core/lib/firebase';
+import { collectionData } from '@/app/core/lib/rxjs';
+import { useRxValue } from '@/app/core/hooks/useRxValue';
+import { from, map, switchMap } from 'rxjs';
+import { getConnectionById } from '../connections/ConnectionsModel';
+import { createMessage } from '../messages/MessagesModel';
 
 export interface Broadcast {
   id: string;
@@ -22,131 +24,81 @@ export interface Broadcast {
   connectionID: string;
   contactsIDs: string[];
   body: string;
-  scheduledAt: Date;
+  scheduledAt: Timestamp;
   connectionName?: string;
-  createdAt: Date;
+  createdAt: Timestamp;
 }
 
-export const useBroadcasts = () => {
-  const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedBroadcast, setSelectedBroadcast] = useState<
-    Broadcast | undefined
-  >(undefined);
-  const [broadcastCount, setBroadcastCount] = useState<number | null>(null);
+export function broadcastsCollection(): CollectionReference {
+  const userId = auth.currentUser?.uid;
+  
+  if (!userId) throw new Error('ID de usuário não encontrado!');
 
-  const { user } = useAuth();
-  const { showAlert } = useAlert();
-  const { connections } = useConnections();
-  const { addMessage } = useMessages();
+  return collection(firestore, `users/${userId}/broadcasts`);
+}
 
-  if (!user?.uid) throw new Error('ID de usuário não encontrado!');
+export function useBroadcasts() {
+  return useRxValue(getBroadcasts$());
+}
 
-  const broadcastsCollection = collection(
-    firestore,
-    `users/${user.uid}/broadcasts`,
-  ) as Query<Broadcast>;
+export function useBroadcastsCount() {
+  return useRxValue(getBroadcastCount$());
+}
 
-  useEffect(() => {
-    setLoading(true);
-
-    const subscription = createFirestoreObservable(broadcastsCollection)
-      .pipe(
-        map((data) =>
-          data.map((doc) => {
-            const scheduledAt =
-              doc.scheduledAt instanceof Timestamp
-                ? doc.scheduledAt.toDate()
-                : doc.scheduledAt;
-
-            const connectionName = connections.find(
-              (c) => c.id === doc.connectionID,
-            )?.name;
-
-            return {
-              ...doc,
-              scheduledAt,
-              connectionName,
-            };
-          }),
-        ),
-      )
-      .subscribe({
-        next: (newBroadcasts) => {
-          setBroadcasts(newBroadcasts);
-          setLoading(false);
-        },
-        error: (error) => {
-          showAlert(String(error), 'error');
-          setLoading(false);
-        },
-      });
-
-    return () => subscription.unsubscribe();
-  }, [connections]);
-
-  useEffect(() => {
-    const subscription = createFirestoreObservable(broadcastsCollection)
-      .pipe(map((data) => data.length))
-      .subscribe({
-        next: (count) => setBroadcastCount(count),
-        error: (error) => showAlert(String(error), 'error'),
-      });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const addBroadcast = async (
-    broadcastData: Omit<Broadcast, 'id' | 'createdAt'>,
-  ) => {
-    try {
-      setLoading(true);
-
-      const newBroadcastRef = await addDoc(
-        broadcastsCollection as CollectionReference,
-        {
-          ...broadcastData,
-          createdAt: new Date(),
-        },
-      );
-
-      const messagePromises = broadcastData.contactsIDs.map((contactID) => {
-        return addMessage({
-          contactID,
-          body: broadcastData.body,
-          broadcastName: broadcastData.name,
-          scheduledAt: broadcastData.scheduledAt,
+export function getBroadcasts$() {
+  return collectionData<Broadcast>(
+    query(broadcastsCollection(), orderBy('createdAt', 'asc')),
+  ).pipe(
+      switchMap((connections) => {
+        const enriched$ = connections.map(async (connection) => {
+          const connectionSnap = await getConnectionById(connection.connectionID);
+          const connectionData = connectionSnap.exists() ? connectionSnap.data() : null;
+  
+          return {
+            ...connection,
+            connectionName: connectionData?.name,
+          };
         });
+  
+        return from(Promise.all(enriched$));
+      })
+    );;
+}
+
+export function getBroadcastCount$() {
+  return collectionData<Broadcast>(query(broadcastsCollection())).pipe(
+    map((broadcasts) => broadcasts.length),
+  );
+}
+
+export function getBroadcastById(id: string) {
+  return getDoc(doc(broadcastsCollection(), id));
+}
+
+export async function createBroadcast(
+  data: PartialWithFieldValue<Broadcast>,
+) {
+  const broadcastRef = await addDoc(broadcastsCollection(), {
+    ...data,
+    updatedAt: serverTimestamp(),
+    createdAt: serverTimestamp(),
+  });
+
+  if (Array.isArray(data.contactsIDs)) {
+    for (const contactId of data.contactsIDs) {
+      await createMessage({
+        contactID: contactId,
+        body: data.body,
+        broadcastID: broadcastRef.id,
+        broadcastName: data.name,
+        scheduledAt: data.scheduledAt,
       });
-
-      await Promise.all(messagePromises);
-
-      showAlert('Broadcast criado com sucesso!', 'success');
-      return newBroadcastRef.id;
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    } finally {
-      setLoading(false);
     }
-  };
+  }
 
-  const deleteBroadcast = async (id: string) => {
-    try {
-      const broadcastDoc = doc(firestore, `users/${user.uid}/broadcasts/${id}`);
-      await deleteDoc(broadcastDoc);
-      showAlert('Broadcast excluído com sucesso!', 'success');
-    } catch (error: unknown) {
-      showAlert(String(error), 'error');
-    }
-  };
+  return broadcastRef;
+}
 
-  return {
-    broadcasts,
-    loading,
-    selectedBroadcast,
-    setSelectedBroadcast,
-    addBroadcast,
-    deleteBroadcast,
-    broadcastCount,
-  };
-};
+export function deleteBroadcast(id: string) {
+  return deleteDoc(doc(broadcastsCollection(), id));
+}

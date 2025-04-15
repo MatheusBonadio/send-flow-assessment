@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ContactModal from './ContactsModal';
 import ContactTableActions from './ContactsTableActions';
-import { Contact, useContacts } from '../ContactsModel';
+import { Contact, deleteContact, useContacts } from '../ContactsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
 
 const columns = [
@@ -11,19 +11,14 @@ const columns = [
 ];
 
 const ContactTable: React.FC = () => {
-  const {
-    contacts,
-    loading,
-    selectedContact,
-    setSelectedContact,
-    deleteContact,
-  } = useContacts();
+  const contacts = useContacts();
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [modalAction, setModalAction] = useState<'create' | 'edit'>('create');
 
   const handleOpenCreateModal = () => {
-    setSelectedContact(undefined);
+    setSelectedContact(null);
     setModalAction('create');
     setOpenModal(true);
   };
@@ -34,7 +29,18 @@ const ContactTable: React.FC = () => {
     setOpenModal(true);
   };
 
-  const data = contacts.map((contact) => ({
+  const handleDeleteContact = async () => {
+    if (selectedContact?.id) {
+      try {
+        await deleteContact(selectedContact.id);
+        setOpenDialog(false);
+      } catch (error) {
+        console.error('Error deleting contact:', error);
+      }
+    }
+  };
+
+  const data = (contacts ?? []).map((contact) => ({
     id: contact.id,
     name: contact.name,
     phone: contact.phone,
@@ -52,28 +58,27 @@ const ContactTable: React.FC = () => {
   return (
     <>
       <div className="flex w-full flex-col justify-between gap-4 p-4 text-black">
-        <div>
+        <div className="flex items-center justify-between">
           <AddButton onClick={handleOpenCreateModal} />
         </div>
 
-        <CustomTable columns={columns} data={data} loading={loading} />
+        <CustomTable columns={columns} data={data} loading={!contacts} />
 
         <ContactModal
           open={openModal}
           onClose={() => setOpenModal(false)}
-          contact={modalAction === 'edit' ? selectedContact : undefined}
+          contact={
+            modalAction === 'edit' && selectedContact
+              ? selectedContact
+              : undefined
+          }
         />
 
-        {openDialog && (
-          <CustomDialog
-            open={openDialog}
-            onClose={() => setOpenDialog(false)}
-            onConfirm={() => {
-              if (selectedContact?.id) deleteContact(selectedContact.id);
-              setOpenDialog(false);
-            }}
-          />
-        )}
+        <CustomDialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          onConfirm={handleDeleteContact}
+        />
       </div>
     </>
   );
