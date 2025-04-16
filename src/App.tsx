@@ -1,7 +1,7 @@
-import AuthProvider from '@/presentation/providers/AuthProvider';
-import { AlertProvider } from '@/presentation/providers/AlertProvider';
-import { SnackbarProviders } from '@/presentation/providers/AlertProvider';
-import { MenuProvider } from '@/presentation/contexts/MenuContext';
+import AuthProvider from '@/app/apps/auth/AuthProvider';
+import { AlertProvider } from '@/app/apps/alert/AlertProvider';
+import { SnackbarProviders } from '@/app/apps/alert/AlertProvider';
+import { MenuProvider } from '@/app/apps/menu/MenuContext';
 import AppRoutes from './routes';
 
 function App() {

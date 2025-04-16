@@ -1,66 +1,42 @@
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from 'react-router-dom';
-import LoginPage from '@/app/(public)/login/page';
-import RegisterPage from '@/app/(public)/register/page';
-import DashboardPage from '@/app/(private)/dashboard/page';
-import ContactPage from '@/app/(private)/dashboard/contacts/ContactsPage';
-import ConnectionPage from '@/app/(private)/dashboard/connections/ConnectionsPage';
-import BroadcastPage from '@/app/(private)/dashboard/broadcast/BroadcastsPage';
-import MessagePage from '@/app/(private)/dashboard/messages/MessagesPage';
-import { useAuth } from '@/presentation/hooks/useAuth';
-import { CircularProgress } from '@mui/material';
-import { Menu } from './presentation/components/layout/Menu';
+import LoginPage from '@/app/apps/login/LoginPage';
+import RegisterPage from '@/app/apps/register/RegisterPage';
+import DashboardPage from '@/app/apps/dashboard/DashboardPage';
+import ContactPage from '@/app/apps/contacts/ContactsPage';
+import ConnectionPage from '@/app/apps/connections/ConnectionsPage';
+import BroadcastPage from '@/app/apps/broadcasts/BroadcastsPage';
+import MessagePage from '@/app/apps/messages/MessagesPage';
+import { useAuth } from '@/app/apps/auth/useAuth';
+import { Menu } from '@/app/apps/menu/MenuSide';
+import { Loading } from '@/app/components/ui';
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+interface RouteProps extends PropsWithChildren {}
+
+function PrivateRoute(props: RouteProps): React.ReactNode {
+  const { children } = props;
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <CircularProgress style={{ color: '#1b5444' }} />
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
   return user ? <>{children}</> : <Navigate to="/login" />;
-};
+}
 
-const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+function PublicRoute(props: RouteProps): React.ReactNode {
+  const { children } = props;
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      >
-        <CircularProgress style={{ color: '#1b5444' }} />
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
   return user ? <Navigate to="/dashboard" /> : <>{children}</>;
-};
+}
 
-const AppRoutes: React.FC = () => {
+export default function AppRoutes(): React.ReactNode {
   return (
     <Router>
       <Routes>
@@ -131,6 +107,4 @@ const AppRoutes: React.FC = () => {
       </Routes>
     </Router>
   );
-};
-
-export default AppRoutes;
+}
