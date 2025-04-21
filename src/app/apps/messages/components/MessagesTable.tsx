@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Chip } from '@mui/material';
 import { Message, StatusMessage, getMessages$ } from '../MessagesModel';
 import { CustomTable, StatusFilter } from '@/app/components/ui';
@@ -40,7 +40,7 @@ const processTableData = (messages: Message[]) =>
     status: renderStatusChip(message.status),
   }));
 
-const MessageTable: React.FC = () => {
+export default function MessageTable() {
   const [statusFilter, setStatusFilter] = useState<StatusMessage>(
     StatusMessage.Scheduled,
   );
@@ -69,6 +69,4 @@ const MessageTable: React.FC = () => {
       <CustomTable columns={columns} data={data} loading={loading} />
     </div>
   );
-};
-
-export default MessageTable;
+}

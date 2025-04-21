@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ConnectionModal from './ConnectionsModal';
 import ConnectionTableActions from './ConnectionsTableActions';
 import {
@@ -13,7 +13,7 @@ const columns = [
   { id: 'actions', label: 'Ações' },
 ];
 
-const ConnectionTable: React.FC = () => {
+export default function ConnectionTable() {
   const connections = useConnections();
   const [selectedConnection, setSelectedConnection] =
     useState<Connection | null>(null);
@@ -85,6 +85,4 @@ const ConnectionTable: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default ConnectionTable;
+}

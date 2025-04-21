@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import BroadcastModal from './BroadcastsModal';
 import BroadcastTableActions from './BroadcastsTableActions';
 import { Broadcast, useBroadcasts } from '../BroadcastsModel';
@@ -15,7 +15,7 @@ const columns = [
   { id: 'actions', label: 'Ações' },
 ];
 
-const BroadcastTable: React.FC = () => {
+export default function BroadcastTable() {
   const broadcasts = useBroadcasts();
   const contacts = useContacts();
   const connections = useConnections();
@@ -91,6 +91,4 @@ const BroadcastTable: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default BroadcastTable;
+}

@@ -15,10 +15,9 @@ interface ConnectionFormProps {
   defaultValues?: FormData;
 }
 
-export const ConnectionForm: React.FC<ConnectionFormProps> = ({
-  onSubmit,
-  defaultValues,
-}) => {
+export function ConnectionForm(props: ConnectionFormProps): React.ReactNode {
+  const { onSubmit, defaultValues } = props;
+
   const {
     handleSubmit,
     register,
@@ -40,4 +39,4 @@ export const ConnectionForm: React.FC<ConnectionFormProps> = ({
       />
     </form>
   );
-};
+}
