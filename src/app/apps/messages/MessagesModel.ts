@@ -4,14 +4,13 @@ import {
   orderBy,
   serverTimestamp,
   addDoc,
-  CollectionReference,
   doc,
   PartialWithFieldValue,
   getDoc,
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { auth, firestore } from '@/app/core/lib/firebase';
+import { firestore } from '@/app/core/lib/firebase';
 import { collectionData } from '@/app/core/lib/rxjs';
 import { useRxValue } from '@/app/core/hooks/useRxValue';
 import { from, map, switchMap } from 'rxjs';
@@ -30,24 +29,20 @@ export interface Message {
   broadcastID: string;
   broadcastName?: string;
   status: StatusMessage;
+  userId: string;
   scheduledAt: Timestamp;
   createdAt: Timestamp;
 }
 
-function messagesCollection(): CollectionReference {
-  const userId = auth.currentUser?.uid;
+export const messagesCollection = collection(firestore, 'messages');
 
-  if (!userId) throw new Error('ID de usuário não encontrado!');
-
-  return collection(firestore, `users/${userId}/messages`);
-}
-
-export function getMessages$(status: StatusMessage) {
+export function getMessages$(userId: string, status: StatusMessage) {
   return collectionData<Message>(
     query(
-      messagesCollection(),
+      messagesCollection,
+      where('userId', '==', userId),
       where('status', '==', status),
-      orderBy('scheduledAt', 'asc')
+      orderBy('scheduledAt', 'asc'),
     ),
   ).pipe(
     switchMap((messages) => {
@@ -62,27 +57,31 @@ export function getMessages$(status: StatusMessage) {
       });
 
       return from(Promise.all(enriched$));
-    })
+    }),
   );
 }
 
-export function useMessages(status: StatusMessage) {
-  return useRxValue(getMessages$(status));
+export function useMessages(userId: string, status: StatusMessage) {
+  return useRxValue(getMessages$(userId, status));
 }
 
-export function useMessagesCount(status: StatusMessage) {
-  return useRxValue(getMessages$(status).pipe(map((msgs) => msgs.length)));
+export function useMessagesCount(userId: string, status: StatusMessage) {
+  return useRxValue(
+    getMessages$(userId, status).pipe(map((msgs) => msgs.length)),
+  );
 }
 
 export function getMessageById(id: string) {
-  return getDoc(doc(messagesCollection(), id));
+  return getDoc(doc(messagesCollection, id));
 }
 
 export function createMessage(
-  data: PartialWithFieldValue<Message>
+  userId: string,
+  data: PartialWithFieldValue<Message>,
 ) {
-  return addDoc(messagesCollection(), {
+  return addDoc(messagesCollection, {
     ...data,
+    userId,
     createdAt: serverTimestamp(),
     status: StatusMessage.Scheduled,
   });

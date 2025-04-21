@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ConnectionModal from './ConnectionsModal';
 import ConnectionTableActions from './ConnectionsTableActions';
 import {
@@ -7,14 +7,19 @@ import {
   deleteConnection,
 } from '../ConnectionsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
+import { useAuth } from '../../auth/useAuth';
 
 const columns = [
   { id: 'name', label: 'Nome' },
   { id: 'actions', label: 'Ações' },
 ];
 
-const ConnectionTable: React.FC = () => {
-  const connections = useConnections();
+export default function ConnectionTable() {
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const connections = useConnections(user.uid);
   const [selectedConnection, setSelectedConnection] =
     useState<Connection | null>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -85,6 +90,4 @@ const ConnectionTable: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default ConnectionTable;
+}

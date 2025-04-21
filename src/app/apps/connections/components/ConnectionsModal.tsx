@@ -8,10 +8,11 @@ import {
   createConnection,
   upsertConnection,
 } from '../ConnectionsModel';
+import { useAuth } from '../../auth/useAuth';
 
 type EditableConnectionFields = Omit<
   Connection,
-  'id' | 'createdAt' | 'updatedAt'
+  'id' | 'createdAt' | 'updatedAt' | 'userId'
 >;
 
 type ConnectionModalProps = {
@@ -36,17 +37,18 @@ export default function ConnectionModal({
 }: ConnectionModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   const handleConnectionSubmission = useCallback(
     async (connectionData: EditableConnectionFields) => {
       try {
         setIsSubmitting(true);
 
-        if (connection?.id) {
+        if (!user) throw new Error('Usuário não encontrado!');
+
+        if (connection?.id)
           await upsertConnection(connection.id, connectionData);
-        } else {
-          await createConnection(connectionData);
-        }
+        else await createConnection(user.uid, connectionData);
 
         onClose();
       } catch (error) {

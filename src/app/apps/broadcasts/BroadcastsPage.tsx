@@ -1,13 +1,10 @@
-import React from 'react';
 import { Body } from '@/app/components/layout/Body';
 import BroadcastTable from './components/BroadcastsTable';
 
-const BroadcastPage: React.FC = () => {
+export default function BroadcastPage() {
   return (
-    <Body title="Broadcasts">
+    <Body title="Transmissões">
       <BroadcastTable />
     </Body>
   );
-};
-
-export default BroadcastPage;
+}

@@ -16,10 +16,9 @@ interface ContactFormProps {
   defaultValues?: FormData;
 }
 
-export const ContactForm: React.FC<ContactFormProps> = ({
-  onSubmit,
-  defaultValues,
-}) => {
+export function ContactForm(props: ContactFormProps): React.ReactNode {
+  const { onSubmit, defaultValues } = props;
+
   const {
     handleSubmit,
     register,
@@ -50,4 +49,4 @@ export const ContactForm: React.FC<ContactFormProps> = ({
       />
     </form>
   );
-};
+}

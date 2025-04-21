@@ -22,18 +22,14 @@ type FormData = z.infer<typeof formSchema>;
 
 interface BroadcastFormProps {
   onSubmit: (values: FormData) => void;
-  loading?: boolean;
   defaultValues?: FormData;
   contacts: Omit<Contact, 'phone'>[];
   connections: Connection[];
 }
 
-export const BroadcastForm: React.FC<BroadcastFormProps> = ({
-  onSubmit,
-  defaultValues,
-  contacts,
-  connections,
-}) => {
+export function BroadcastForm(props: BroadcastFormProps): React.ReactNode {
+  const { onSubmit, defaultValues, contacts, connections } = props;
+
   const {
     handleSubmit,
     register,
@@ -133,4 +129,4 @@ export const BroadcastForm: React.FC<BroadcastFormProps> = ({
       />
     </form>
   );
-};
+}

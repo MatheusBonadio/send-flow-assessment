@@ -4,15 +4,15 @@ import {
   orderBy,
   serverTimestamp,
   addDoc,
-  CollectionReference,
   setDoc,
   doc,
   deleteDoc,
   PartialWithFieldValue,
   getDoc,
   Timestamp,
+  where,
 } from 'firebase/firestore';
-import { auth, firestore } from '@/app/core/lib/firebase';
+import { firestore } from '@/app/core/lib/firebase';
 import { collectionData } from '@/app/core/lib/rxjs';
 import { useRxValue } from '@/app/core/hooks/useRxValue';
 import { map } from 'rxjs';
@@ -21,47 +21,48 @@ export interface Contact {
   id: string;
   name: string;
   phone: string;
+  userId: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 
-export function contactsCollection(): CollectionReference {
-  const userId = auth.currentUser?.uid;
-  
-  if (!userId) throw new Error('ID de usuário não encontrado!');
+export const contactsCollection = collection(firestore, 'contacts');
 
-  return collection(firestore, `users/${userId}/contacts`);
+export function useContacts(userId: string) {
+  return useRxValue(getContacts$(userId));
 }
 
-export function useContacts() {
-  return useRxValue(getContacts$());
+export function useContactsCount(userId: string) {
+  return useRxValue(getContactCount$(userId));
 }
 
-export function useContactsCount() {
-  return useRxValue(getContactCount$());
-}
-
-export function getContacts$() {
+export function getContacts$(userId: string) {
   return collectionData<Contact>(
-    query(contactsCollection(), orderBy('createdAt', 'asc')),
+    query(
+      contactsCollection,
+      where('userId', '==', userId),
+      orderBy('createdAt', 'asc'),
+    ),
   );
 }
 
-export function getContactCount$() {
-  return collectionData<Contact>(query(contactsCollection())).pipe(
-    map((contacts) => contacts.length),
-  );
+export function getContactCount$(userId: string) {
+  return collectionData<Contact>(
+    query(contactsCollection, where('userId', '==', userId)),
+  ).pipe(map((contacts) => contacts.length));
 }
 
 export function getContactById(id: string) {
-  return getDoc(doc(contactsCollection(), id));
+  return getDoc(doc(contactsCollection, id));
 }
 
 export function createContact(
+  userId: string,
   data: PartialWithFieldValue<Contact>,
 ) {
-  return addDoc(contactsCollection(), {
+  return addDoc(contactsCollection, {
     ...data,
+    userId,
     updatedAt: serverTimestamp(),
     createdAt: serverTimestamp(),
   });
@@ -72,12 +73,12 @@ export function upsertContact(
   data: PartialWithFieldValue<Contact>,
 ) {
   return setDoc(
-    doc(contactsCollection(), id),
+    doc(contactsCollection, id),
     { ...data, updatedAt: serverTimestamp() },
     { merge: true },
   );
 }
 
 export function deleteContact(id: string) {
-  return deleteDoc(doc(contactsCollection(), id));
+  return deleteDoc(doc(contactsCollection, id));
 }

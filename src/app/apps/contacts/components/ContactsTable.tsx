@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ContactModal from './ContactsModal';
 import ContactTableActions from './ContactsTableActions';
 import { Contact, deleteContact, useContacts } from '../ContactsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
+import { useAuth } from '../../auth/useAuth';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -10,8 +11,12 @@ const columns = [
   { id: 'actions', label: 'Ações' },
 ];
 
-const ContactTable: React.FC = () => {
-  const contacts = useContacts();
+export default function ContactTable() {
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const contacts = useContacts(user.uid);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -82,6 +87,4 @@ const ContactTable: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default ContactTable;
+}

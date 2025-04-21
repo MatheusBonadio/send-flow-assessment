@@ -7,10 +7,11 @@ import { Broadcast, createBroadcast } from '../BroadcastsModel';
 import { Contact } from '../../contacts/ContactsModel';
 import { Connection } from '../../connections/ConnectionsModel';
 import { Timestamp } from 'firebase/firestore';
+import { useAuth } from '../../auth/useAuth';
 
 type EditableBroadcastFields = Omit<
   Broadcast,
-  'id' | 'createdAt' | 'scheduledAt'
+  'id' | 'createdAt' | 'scheduledAt' | 'userId'
 > & {
   scheduledAt: Date;
   connectionName?: string;
@@ -44,13 +45,16 @@ export default function BroadcastModal({
 }: BroadcastModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showAlert } = useAlert();
+  const { user } = useAuth();
 
   const handleBroadcastSubmission = useCallback(
     async (broadcastData: EditableBroadcastFields) => {
       try {
         setIsSubmitting(true);
 
-        await createBroadcast({
+        if (!user) throw new Error('Usuário não encontrado!');
+
+        await createBroadcast(user.uid, {
           ...broadcastData,
           scheduledAt: Timestamp.fromDate(broadcastData.scheduledAt),
         });
