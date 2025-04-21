@@ -3,7 +3,7 @@ import BroadcastTable from './components/BroadcastsTable';
 
 export default function BroadcastPage() {
   return (
-    <Body title="Broadcasts">
+    <Body title="Transmissões">
       <BroadcastTable />
     </Body>
   );

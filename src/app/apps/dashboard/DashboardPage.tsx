@@ -14,13 +14,21 @@ import {
   WhatsApp,
 } from '@mui/icons-material';
 import { useContactsCount } from '../contacts/ContactsModel';
+import { useAuth } from '../auth/useAuth';
 
 function Dashboard() {
-  const contactCount = useContactsCount();
-  const connectionCount = useConnectionsCount();
-  const broadcastCount = useBroadcastsCount();
-  const messageCountScheduled = useMessagesCount(StatusMessage.Scheduled);
-  const messageCountSent = useMessagesCount(StatusMessage.Sent);
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const contactCount = useContactsCount(user.uid);
+  const connectionCount = useConnectionsCount(user.uid);
+  const broadcastCount = useBroadcastsCount(user.uid);
+  const messageCountScheduled = useMessagesCount(
+    user.uid,
+    StatusMessage.Scheduled,
+  );
+  const messageCountSent = useMessagesCount(user.uid, StatusMessage.Sent);
 
   const cardsData = [
     {

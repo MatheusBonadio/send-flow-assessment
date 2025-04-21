@@ -7,6 +7,7 @@ import {
   deleteConnection,
 } from '../ConnectionsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
+import { useAuth } from '../../auth/useAuth';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -14,7 +15,11 @@ const columns = [
 ];
 
 export default function ConnectionTable() {
-  const connections = useConnections();
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const connections = useConnections(user.uid);
   const [selectedConnection, setSelectedConnection] =
     useState<Connection | null>(null);
   const [openModal, setOpenModal] = useState(false);

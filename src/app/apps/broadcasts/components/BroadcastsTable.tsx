@@ -6,6 +6,7 @@ import { useContacts } from '../../contacts/ContactsModel';
 import { useConnections } from '../../connections/ConnectionsModel';
 import { AddButton, CustomDialog, CustomTable } from '@/app/components/ui';
 import { deleteBroadcast } from '../BroadcastsModel';
+import { useAuth } from '../../auth/useAuth';
 
 const columns = [
   { id: 'name', label: 'Nome' },
@@ -16,9 +17,13 @@ const columns = [
 ];
 
 export default function BroadcastTable() {
-  const broadcasts = useBroadcasts();
-  const contacts = useContacts();
-  const connections = useConnections();
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const broadcasts = useBroadcasts(user.uid);
+  const contacts = useContacts(user.uid);
+  const connections = useConnections(user.uid);
 
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -63,11 +68,7 @@ export default function BroadcastTable() {
           <AddButton onClick={handleOpenCreateModal} />
         </div>
 
-        <CustomTable
-          columns={columns}
-          data={data}
-          loading={!broadcasts?.length}
-        />
+        <CustomTable columns={columns} data={data} loading={!broadcasts} />
 
         <BroadcastModal
           open={openModal}

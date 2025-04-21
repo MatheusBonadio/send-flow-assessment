@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Chip } from '@mui/material';
 import { Message, StatusMessage, getMessages$ } from '../MessagesModel';
 import { CustomTable, StatusFilter } from '@/app/components/ui';
+import { useAuth } from '../../auth/useAuth';
 
 const columns = [
   { id: 'contactName', label: 'Contato' },
@@ -46,14 +47,20 @@ export default function MessageTable() {
   );
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     setLoading(true);
-    const subscription = getMessages$(statusFilter).subscribe(async (msgs) => {
-      const resolvedMessages = await Promise.all(msgs);
-      setMessages(resolvedMessages);
-      setLoading(false);
-    });
+
+    if (!user) throw new Error('Usuário não encontrado!');
+
+    const subscription = getMessages$(user.uid, statusFilter).subscribe(
+      async (msgs) => {
+        const resolvedMessages = await Promise.all(msgs);
+        setMessages(resolvedMessages);
+        setLoading(false);
+      },
+    );
 
     return () => subscription.unsubscribe();
   }, [statusFilter]);

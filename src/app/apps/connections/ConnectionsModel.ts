@@ -11,8 +11,9 @@ import {
   getDoc,
   CollectionReference,
   Timestamp,
+  where,
 } from 'firebase/firestore';
-import { auth, firestore } from '@/app/core/lib/firebase';
+import { firestore } from '@/app/core/lib/firebase';
 import { collectionData } from '@/app/core/lib/rxjs';
 import { useRxValue } from '@/app/core/hooks/useRxValue';
 import { map } from 'rxjs';
@@ -20,36 +21,37 @@ import { map } from 'rxjs';
 export interface Connection {
   id: string;
   name: string;
+  userId: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 
 export function connectionsCollection(): CollectionReference {
-  const userId = auth.currentUser?.uid;
-  
-  if (!userId) throw new Error('ID de usuário não encontrado!');
-
-  return collection(firestore, `users/${userId}/connections`);
+  return collection(firestore, 'connections');
 }
 
-export function useConnections() {
-  return useRxValue(getConnections$());
+export function useConnections(userId: string) {
+  return useRxValue(getConnections$(userId));
 }
 
-export function useConnectionsCount() {
-  return useRxValue(getConnectionCount$());
+export function useConnectionsCount(userId: string) {
+  return useRxValue(getConnectionCount$(userId));
 }
 
-export function getConnections$() {
+export function getConnections$(userId: string) {
   return collectionData<Connection>(
-    query(connectionsCollection(), orderBy('createdAt', 'asc')),
+    query(
+      connectionsCollection(),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'asc'),
+    ),
   );
 }
 
-export function getConnectionCount$() {
-  return collectionData<Connection>(query(connectionsCollection())).pipe(
-    map((connections) => connections.length),
-  );
+export function getConnectionCount$(userId: string) {
+  return collectionData<Connection>(
+    query(connectionsCollection(), where('userId', '==', userId)),
+  ).pipe(map((connections) => connections.length));
 }
 
 export function getConnectionById(id: string) {
@@ -57,10 +59,12 @@ export function getConnectionById(id: string) {
 }
 
 export function createConnection(
+  userId: string,
   data: PartialWithFieldValue<Connection>,
 ) {
   return addDoc(connectionsCollection(), {
     ...data,
+    userId,
     updatedAt: serverTimestamp(),
     createdAt: serverTimestamp(),
   });

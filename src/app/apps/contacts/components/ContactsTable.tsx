@@ -12,8 +12,11 @@ const columns = [
 ];
 
 export default function ContactTable() {
-  const userId = useAuth().user?.uid || '';
-  const contacts = useContacts(userId);
+  const { user } = useAuth();
+
+  if (!user) throw new Error('Usuário não encontrado!');
+
+  const contacts = useContacts(user.uid);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);

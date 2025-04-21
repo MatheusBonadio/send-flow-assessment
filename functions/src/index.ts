@@ -9,7 +9,7 @@ export const updateMessageStatus = onSchedule(
     const firestore = admin.firestore();
     const now = new Date();
 
-    const messagesRef = firestore.collectionGroup('messages');
+    const messagesRef = firestore.collection('messages');
 
     try {
       const query = messagesRef
