@@ -188,6 +188,14 @@ export default function LoginCard() {
                     <label className="text-sm leading-none font-medium">
                       Senha
                     </label>
+                    <Link
+                      href="/reset-password"
+                      className="!decoration-inherit underline-offset-4"
+                      color="#288d70"
+                      sx={{ fontSize: 13 }}
+                    >
+                      Esqueceu sua senha?
+                    </Link>
                   </div>
                   <input
                     type="password"

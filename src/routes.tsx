@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import LoginPage from '@/app/apps/login/LoginPage';
 import RegisterPage from '@/app/apps/register/RegisterPage';
+import ResetPasswordPage from '@/app/apps/reset-password/ResetPasswordPage';
 import DashboardPage from '@/app/apps/dashboard/DashboardPage';
 import ContactPage from '@/app/apps/contacts/ContactsPage';
 import ConnectionPage from '@/app/apps/connections/ConnectionsPage';
@@ -53,6 +54,14 @@ export default function AppRoutes(): React.ReactNode {
           element={
             <PublicRoute>
               <RegisterPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPasswordPage />
             </PublicRoute>
           }
         />
