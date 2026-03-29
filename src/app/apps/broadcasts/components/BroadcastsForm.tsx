@@ -18,7 +18,8 @@ const formSchema = z.object({
   contactsIDs: z.array(z.string()).min(1, 'Pelo menos um contato é necessário'),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormInput = z.input<typeof formSchema>;
+type FormData = z.output<typeof formSchema>;
 
 interface BroadcastFormProps {
   onSubmit: (values: FormData) => void;
@@ -35,7 +36,7 @@ export function BroadcastForm(props: BroadcastFormProps): React.ReactNode {
     register,
     control,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<FormInput, unknown, FormData>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
